@@ -21,23 +21,12 @@ const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const CALENDAR_EVENTS_SCOPE = 'https://www.googleapis.com/auth/calendar.events';
 const CALENDAR_LIST_READONLY_SCOPE =
   'https://www.googleapis.com/auth/calendar.calendarlist.readonly';
-const CLIENT_ID =
-  '__GOOGLE_CLIENT_ID__';
-// NOT A SECRET — this is a "Desktop" OAuth client type (RFC 8252).
-// Google classifies these as public clients where the secret cannot be kept
-// confidential (it ships in the binary users download). PKCE + server-side
-// redirect URI restrictions are the actual security mechanisms.
-// Do not rotate or revoke — this value is intentionally committed.
+// Configure OAuth client identifiers through the plugin build/deployment process.
+// Credentials must never be committed to the repository.
+const CLIENT_ID = '__GOOGLE_CLIENT_ID__';
 const CLIENT_SECRET = '__GOOGLE_CLIENT_SECRET__';
-// Android OAuth client ID — authenticates via package name + SHA-1 signing key.
-// No client secret needed; PKCE is the sole proof mechanism.
-// Requires "Custom URI scheme" to be enabled in Google Cloud Console.
-const MOBILE_CLIENT_ID =
-  '__GOOGLE_CLIENT_ID__';
-// iOS OAuth client ID — authenticates via bundle ID.
-// Requires "Custom URI scheme" to be enabled in Google Cloud Console.
-const IOS_CLIENT_ID =
-  '__GOOGLE_CLIENT_ID__';
+const MOBILE_CLIENT_ID = '__GOOGLE_MOBILE_CLIENT_ID__';
+const IOS_CLIENT_ID = '__GOOGLE_IOS_CLIENT_ID__';
 
 // --- Config ---
 
