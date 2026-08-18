@@ -1,0 +1,1062 @@
+/**
+ * Huma — پنل مدیریت هُما
+ * A glassmorphism dark theme for Super Productivity, ported from the Huma
+ * admin panel design language: deep "ink" navy surfaces, an emerald→aqua
+ * brand gradient, spring easing, frosted panes, and Vazirmatn typography.
+ *
+ * Structure mirrors the built-in theme contract (see velvet.css):
+ *   1. @font-face + :root motion/frost tokens
+ *   2. body.isDarkTheme — palette + public theme contract
+ *   3. Ambient background (gradient halos + dot grid)
+ *   4. Shell — sidenav, header, right panel, scrollbars
+ *   5. Content — tasks, notes, schedule, planner
+ *   6. Material component overrides — buttons, inputs, dialogs, menus, chips…
+ *   7. Reduced-transparency / no-backdrop-filter fallbacks
+ */
+
+/* ==================================================================
+ * 1. MOTION TOKENS
+ *
+ * The Vazirmatn @font-face rules live in src/styles/font/vazirmatn.scss —
+ * built-in themes must contain no fetch-bearing CSS so they double as
+ * upload templates. This file only selects the family.
+ * ================================================================== */
+
+:root {
+  /* Spring easing — the signature of the Huma panel. */
+  --huma-spring: cubic-bezier(0.22, 1, 0.36, 1);
+  --transition-fast: 200ms var(--huma-spring);
+  --transition-normal: 320ms var(--huma-spring);
+
+  /* Frosted-glass intensities — pair each with a --huma-pane-* color. */
+  --huma-frost: blur(16px) saturate(160%);
+  --huma-frost-strong: blur(24px) saturate(170%);
+  --huma-frost-deep: blur(32px) saturate(180%);
+  --huma-frost-tooltip: blur(12px) saturate(150%);
+}
+
+/* ==================================================================
+ * 2. PALETTE + PUBLIC THEME CONTRACT
+ * ================================================================== */
+
+body.isDarkTheme {
+  /* Vazirmatn is the app-wide face (see styles/_fonts.scss), so the theme
+     does not restate it here. */
+
+  /* --- Ink ramp (deepest → highest) --- */
+  --huma-ink-950: #070b12;
+  --huma-ink-900: #0b111d;
+  --huma-ink-850: #0e1626;
+  --huma-ink-800: #131c2e;
+  --huma-ink-700: #1a2438;
+  --huma-ink-600: #243149;
+
+  /* --- Brand: emerald → aqua --- */
+  --huma-brand-100: #d1fae5;
+  --huma-brand-200: #a7f3d0;
+  --huma-brand-300: #6ee7b7;
+  --huma-brand-400: #34d399;
+  --huma-brand-500: #10b981;
+  --huma-brand-600: #059669;
+  --huma-brand-700: #047857;
+  --huma-aqua-300: #67e8f9;
+  --huma-aqua-400: #22d3ee;
+  --huma-aqua-500: #06b6d4;
+  --huma-amber: #f59e0b;
+  --huma-rose: #fb7185;
+
+  /* --- Foreground (slate) --- */
+  --huma-fg: #e2e8f0;
+  --huma-fg-strong: #ffffff;
+  --huma-fg-muted: #94a3b8;
+  --huma-fg-faint: #64748b;
+
+  /* --- Fill scale: white-alpha overlays for tiles, hovers, borders --- */
+  --huma-fill-1: rgba(255, 255, 255, 0.02);
+  --huma-fill-2: rgba(255, 255, 255, 0.035);
+  --huma-fill-3: rgba(255, 255, 255, 0.06);
+  --huma-fill-4: rgba(255, 255, 255, 0.08);
+  --huma-fill-5: rgba(255, 255, 255, 0.1);
+  --huma-fill-6: rgba(255, 255, 255, 0.14);
+
+  /* --- Pane scale: frosted panels at stepped alpha --- */
+  --huma-pane-rgb: 14, 22, 38;
+  --huma-pane-1: rgba(var(--huma-pane-rgb), 0.55);
+  --huma-pane-2: rgba(var(--huma-pane-rgb), 0.7);
+  --huma-pane-3: rgba(var(--huma-pane-rgb), 0.82);
+  --huma-pane-4: rgba(var(--huma-pane-rgb), 0.9);
+  --huma-pane-5: rgba(var(--huma-pane-rgb), 0.96);
+
+  /* --- Signature shadows --- */
+  --huma-shadow-card: 0 8px 30px -12px rgba(2, 8, 20, 0.7);
+  --huma-shadow-lift: 0 20px 45px -15px rgba(2, 8, 20, 0.85);
+  --huma-glow: 0 0 24px -6px rgba(16, 185, 129, 0.45);
+  --huma-glow-lg: 0 0 60px -12px rgba(16, 185, 129, 0.35);
+
+  /* ---------- Public theme contract ---------- */
+  --surface-0: var(--huma-ink-950);
+  --surface-1: var(--huma-ink-900);
+  --surface-2: var(--huma-ink-850);
+  --surface-3: var(--huma-ink-800);
+  --surface-4: var(--huma-ink-700);
+
+  --ink-strong: var(--huma-fg-strong);
+  --ink: var(--huma-fg);
+  --ink-muted: var(--huma-fg-muted);
+  --ink-on-channel: 226, 232, 240;
+
+  --separator: var(--huma-fill-3);
+  --divider: var(--huma-fill-3);
+  --scrim: rgba(7, 11, 18, 0.72);
+  --bg-overlay: rgba(7, 11, 18, 0.8);
+
+  --brand: var(--huma-brand-400);
+  --focus-ring: var(--huma-brand-400);
+  --system-surface: var(--huma-ink-950);
+
+  /* Force the emerald accent — Huma is a single-brand design. Every shade the
+     app actually consumes (300/400/500/600/800 primary, 500 accent) is
+     declared with its contrast foreground; ink-950 clears 4.5:1 on the light
+     emerald stops, while the deep 800 needs white instead. */
+  --palette-primary-300: var(--huma-brand-300);
+  --palette-primary-contrast-300: var(--huma-ink-950);
+  --palette-primary-400: var(--huma-brand-400);
+  --palette-primary-contrast-400: var(--huma-ink-950);
+  --palette-primary-500: var(--huma-brand-500);
+  --palette-primary-contrast-500: var(--huma-ink-950);
+  --palette-primary-600: var(--huma-brand-600);
+  --palette-primary-contrast-600: var(--huma-ink-950);
+  --palette-primary-800: #065f46;
+  --palette-primary-contrast-800: #ffffff;
+
+  --palette-accent-500: var(--huma-aqua-500);
+  --palette-accent-contrast-500: var(--huma-ink-950);
+
+  --c-primary: var(--huma-brand-400);
+  --c-accent: var(--huma-aqua-400);
+  --c-warn: var(--huma-rose);
+
+  /* Semantic status colors — kept distinct from the emerald brand so
+     "good/warning/bad" never reads as "branded". */
+  --c-success: var(--huma-brand-400);
+  --c-warning: var(--huma-amber);
+  --c-error: var(--huma-rose);
+  --c-info: var(--huma-aqua-400);
+  --color-success: var(--huma-brand-400);
+  --color-warning: var(--huma-amber);
+  --color-danger: var(--huma-rose);
+
+  /* Material 3 system surfaces — Material components that read these
+     directly (rather than through SP's tokens) still land on ink. */
+  --mat-theme-background: var(--huma-ink-950);
+  --mat-theme-surface: var(--huma-ink-850);
+  --mat-theme-on-surface: var(--huma-fg);
+  --mat-theme-primary: var(--huma-brand-400);
+
+  /* ---------- Backgrounds ---------- */
+  --bg: var(--huma-ink-950);
+  --bg-darker: #04070c;
+  --bg-slightly-lighter: var(--huma-ink-900);
+  --bg-lighter: var(--huma-ink-850);
+  --bg-lightest: var(--huma-ink-800);
+  --bg-super-light: var(--huma-ink-700);
+
+  --card-bg: var(--huma-pane-2);
+  --sidenav-bg: transparent;
+  --selected-task-bg-color: var(--huma-fill-4);
+  --banner-bg: var(--huma-pane-3);
+
+  --task-c-bg: var(--huma-fill-2);
+  --task-c-selected-bg: var(--huma-fill-4);
+  --sub-task-c-bg: var(--huma-fill-1);
+  --sub-task-c-bg-done: rgba(255, 255, 255, 0.012);
+  --task-c-bg-done: var(--huma-fill-1);
+  --task-c-current-bg: rgba(16, 185, 129, 0.12);
+  --task-c-drag-drop-bg: rgba(34, 211, 238, 0.1);
+  --sub-task-c-bg-in-selected: var(--huma-fill-2);
+
+  --standard-note-bg: var(--huma-fill-2);
+  --standard-note-bg-hovered: var(--huma-fill-3);
+  --standard-note-fg: var(--huma-fg);
+
+  /* ---------- Text ---------- */
+  --text-color: var(--huma-fg);
+  --text-color-less-intense: rgba(226, 232, 240, 0.85);
+  --text-color-muted: var(--huma-fg-muted);
+  --text-color-more-intense: #f1f5f9;
+  --text-color-most-intense: var(--huma-fg-strong);
+  --task-detail-value-color: rgba(226, 232, 240, 0.85);
+
+  --link-color: var(--huma-brand-300);
+
+  /* ---------- Borders ---------- */
+  --extra-border-color: var(--huma-fill-3);
+  --separator-color: var(--huma-fill-3);
+  --divider-color: var(--huma-fill-2);
+  --chip-outline-color: var(--huma-fill-5);
+
+  /* ---------- UI ---------- */
+  --scrollbar-thumb: var(--huma-ink-600);
+  --scrollbar-thumb-hover: var(--huma-brand-600);
+  --scrollbar-track: transparent;
+
+  --close-btn-bg: var(--huma-ink-800);
+  --close-btn-border: var(--huma-fill-3);
+
+  --select-hover-bg: rgba(16, 185, 129, 0.12);
+  --options-border-color: rgba(16, 185, 129, 0.22);
+
+  --attachment-bg: var(--huma-fill-3);
+  --attachment-border: var(--huma-fill-3);
+  --attachment-control-bg: rgba(7, 11, 18, 0.6);
+  --attachment-control-border: transparent;
+  --attachment-control-hover-bg: rgba(7, 11, 18, 0.85);
+
+  --grid-color: var(--huma-fill-2);
+  --progress-bg: var(--huma-fill-4);
+
+  --improvement-text: #f1f5f9;
+  --improvement-border: rgba(16, 185, 129, 0.32);
+  --improvement-button-text: var(--huma-ink-950);
+
+  /* Elevation — deep and soft, matching shadow-card. */
+  --shadow-key-umbra-opacity: 0.22;
+  --shadow-key-penumbra-opacity: 0.14;
+  --shadow-ambient-shadow-opacity: 0.12;
+  --card-shadow: var(--huma-shadow-card);
+  --task-current-shadow:
+    0 4px 16px -6px rgba(2, 8, 20, 0.7), 0 0 0 1px rgba(16, 185, 129, 0.35);
+  --task-selected-shadow:
+    var(--huma-shadow-card), 0 0 0 1px rgba(16, 185, 129, 0.28);
+
+  --hover-controls-border: 1px solid var(--huma-fill-3);
+  --hover-controls-border-opacity: 1;
+
+  --hover-bg-opacity: 0.06;
+  --focus-bg-opacity: 0.1;
+  --pressed-bg-opacity: 0.14;
+  --disabled-opacity: 0.4;
+
+  /* Generous radii — rounded-xl / rounded-2xl in the source design. */
+  --card-border-radius: 16px;
+  --task-border-radius: 12px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* Sidenav — emerald-tinted active pill with a gradient edge marker. */
+  --sidenav-item-active-bg: rgba(16, 185, 129, 0.15);
+  --sidenav-active-text: var(--huma-brand-300);
+  --sidenav-hover-bg: var(--huma-fill-2);
+  --sidenav-text: var(--huma-fg-muted);
+  --sidenav-text-hover: var(--huma-fg-strong);
+  --sidenav-text-secondary: var(--huma-fg-faint);
+
+  --task-detail-bg: var(--huma-fill-2);
+  --task-detail-bg-hover: var(--huma-fill-3);
+  --task-detail-shadow: none;
+
+  --input-bg: rgba(19, 28, 46, 0.6);
+  --input-bg-hover: rgba(19, 28, 46, 0.9);
+  --input-border-color: var(--huma-fill-3);
+  --input-border-radius: 12px;
+
+  --schedule-event-bg: var(--huma-fill-4);
+  --schedule-event-bg-in-side-panel: var(--huma-fill-3);
+}
+
+/* ==================================================================
+ * 3. AMBIENT BACKGROUND — gradient halos + dot grid
+ * ================================================================== */
+
+/* Neutralise SP's flat body tint so the halo layer reads cleanly. This is the
+   sanctioned hook — dark-base, arc, dracula and velvet all hide body:before. */
+body.isDarkTheme:before {
+  display: none !important;
+}
+
+/* Gradient halos live on the body background itself, so the flex layout of
+   .app-container is left completely untouched.
+   The `.isDisableBackgroundTint` variant is listed explicitly: page.scss sets
+   the `background` *shorthand* on that two-class selector, which would
+   otherwise reset background-image back to `none`. */
+body.isDarkTheme,
+body.isDarkTheme.isDisableBackgroundTint {
+  background-color: var(--huma-ink-950);
+  background-image:
+    radial-gradient(
+      34rem 34rem at 88% -8%,
+      rgba(16, 185, 129, 0.13),
+      transparent 70%
+    ),
+    radial-gradient(30rem 30rem at 6% 108%, rgba(6, 182, 212, 0.1), transparent 70%),
+    radial-gradient(22rem 22rem at 38% 32%, rgba(245, 158, 11, 0.05), transparent 70%);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+/* Dot grid: a negative-z fixed layer, so it paints above the body background
+   but below every in-flow element without needing z-index on app content. */
+body.isDarkTheme::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.35;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Everything from the container down stays transparent so the ambient layer
+   shows through the whole app. */
+body.isDarkTheme .app-container,
+body.isDarkTheme .main-content,
+body.isDarkTheme .route-wrapper,
+body.isDarkTheme .page-wrapper,
+body.isDarkTheme main,
+body.isDarkTheme .work-view-page,
+body.isDarkTheme right-panel {
+  background: transparent !important;
+}
+
+/* Blur a user wallpaper so frosted surfaces still read as glass. */
+body.isDarkTheme .bg-image {
+  filter: blur(22px) saturate(130%) brightness(0.55);
+}
+
+/* ==================================================================
+ * 4. SHELL — sidenav, header, right panel, scrollbars
+ * ================================================================== */
+
+/* --- Sidenav: frosted panel with a hairline edge --- */
+body.isDarkTheme magic-side-nav .nav-sidenav {
+  background: var(--huma-pane-2);
+  backdrop-filter: var(--huma-frost-deep);
+  -webkit-backdrop-filter: var(--huma-frost-deep);
+  border-inline-end: 1px solid var(--huma-fill-3);
+}
+
+body.isDarkTheme.hasBgImage magic-side-nav .nav-sidenav {
+  background: var(--huma-pane-3);
+}
+
+body.isDarkTheme magic-side-nav .side-nav {
+  background: transparent;
+}
+
+/* Nav items: rounded pills with a gradient edge marker that grows on
+   hover/active — the signature sidebar interaction of the Huma panel.
+   Colors themselves come from the --sidenav-* tokens above; this block only
+   adds the shape and the marker. The marker sits on the inline-start edge so
+   it reads correctly in both RTL and LTR. */
+body.isDarkTheme magic-side-nav .nav-link {
+  position: relative;
+  border-radius: 12px;
+  overflow: visible;
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
+}
+
+body.isDarkTheme magic-side-nav .nav-link::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 50%;
+  width: 3px;
+  height: 0;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  opacity: 0;
+  background: linear-gradient(
+    to bottom,
+    var(--huma-brand-300),
+    var(--huma-brand-600)
+  );
+  transition:
+    height var(--transition-normal),
+    opacity var(--transition-normal);
+}
+
+body.isDarkTheme magic-side-nav .nav-link:hover::before,
+body.isDarkTheme magic-side-nav .nav-link.active::before {
+  height: 60%;
+  opacity: 1;
+}
+
+/* Active row gets the emerald wash fading away from the marker edge. */
+body.isDarkTheme magic-side-nav .nav-link.active {
+  background: linear-gradient(
+    to var(--huma-nav-fade, left),
+    rgba(16, 185, 129, 0.15),
+    transparent
+  ) !important;
+}
+
+body.isDarkTheme .app-container[dir='ltr'] magic-side-nav .nav-link.active {
+  --huma-nav-fade: right;
+}
+
+/* Folder/section labels — quiet uppercase, like the panel's "منوی اصلی". */
+body.isDarkTheme nav-folder > .folder-title {
+  color: var(--huma-fg-faint);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* --- Sidenav rhythm & detailing --------------------------------------
+   The stock sidebar reads as one undifferentiated column of rows. Huma's
+   panel separates it into labelled groups with a clear type hierarchy:
+   quiet section captions, comfortable rows, emerald count pills, and
+   controls that only assert themselves on hover. */
+
+body.isDarkTheme magic-side-nav .nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-inline: 8px;
+}
+
+body.isDarkTheme magic-side-nav .nav-link {
+  padding-block: 9px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Icons drift toward the label and swell slightly on hover — the Huma
+   sidebar's micro-interaction. Uses a logical-direction custom property so
+   the drift follows reading order. */
+body.isDarkTheme magic-side-nav .nav-link .nav-icon {
+  transition: transform var(--transition-normal);
+}
+
+body.isDarkTheme magic-side-nav .nav-link:hover .nav-icon {
+  transform: scale(1.12);
+}
+
+/* Group headers (پروژه‌ها / برچسب‌ها) become captions, not rows: smaller,
+   letter-spaced, muted, and without the pill/marker treatment that would
+   make them compete with real destinations. */
+body.isDarkTheme magic-side-nav nav-list-tree > .g-multi-btn-wrapper .nav-link {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--huma-fg-faint);
+  padding-block: 6px;
+}
+
+body.isDarkTheme
+  magic-side-nav
+  nav-list-tree
+  > .g-multi-btn-wrapper
+  .nav-link::before {
+  content: none;
+}
+
+body.isDarkTheme magic-side-nav nav-list-tree > .g-multi-btn-wrapper .nav-link:hover {
+  color: var(--huma-fg-muted);
+  background: transparent;
+}
+
+/* The expand chevron on a group header is decorative — keep it faint. */
+body.isDarkTheme
+  magic-side-nav
+  nav-list-tree
+  > .g-multi-btn-wrapper
+  .nav-link
+  .expand-icon {
+  opacity: 0.55;
+}
+
+/* Nest children under their group with a hairline spine. */
+body.isDarkTheme magic-side-nav .nav-children {
+  position: relative;
+  margin-inline-start: 14px;
+  padding-inline-start: 8px;
+  border-inline-start: 1px solid var(--huma-fill-3);
+}
+
+/* Open-task counts become emerald pills instead of loose digits, parked at the
+   row's inline-end. The component pins them with a physical `right`, which put
+   them on the icon side once the sidebar is mirrored; `inset-inline-end` is
+   declared last so it wins for both directions. */
+body.isDarkTheme magic-side-nav .task-count {
+  right: auto;
+  left: auto;
+  inset-inline-end: 12px;
+  min-width: 20px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--huma-brand-300);
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* Reserve the badge's gutter on the end side instead of the physical right
+   (the icon side in RTL, which is what the component reserves by default).
+   The component's own `&.has-tasks { padding-right: var(--s5) }` rule
+   compiles with Angular's per-component `[_ngcontent-*]` attribute on every
+   compound selector, which out-specifies a plain class selector here — so
+   both declarations need !important to actually win. */
+body.isDarkTheme magic-side-nav .nav-link.has-tasks {
+  padding-right: var(--s2) !important;
+  padding-inline-end: var(--s5) !important;
+}
+
+/* The count normally hides on hover to make room for the per-row ⋮ button.
+   That button is removed below, so the count can simply stay put. */
+body.isDarkTheme magic-side-nav nav-item:hover .task-count {
+  display: flex !important;
+}
+
+/* Per-row overflow menu (⋮): removed for workContext/route/folder rows —
+   nav-item renders it as a direct child of its own host element, so scoping
+   to `nav-item > .additional-btn` leaves the *group-header* buttons (the
+   "+"/visibility icons beside "پروژه‌ها"/"برچسب‌ها", which live in a sibling
+   `.additional-btns` wrapper, not inside a <nav-item>) untouched. The same
+   actions stay available by right-clicking the row, which the context-menu
+   directive already binds. !important because the component's own
+   `.additional-btn { width: 40px !important }` rule compiles with Angular's
+   per-component `[_ngcontent-*]` attribute on the selector, which out-
+   specifies a plain override here. */
+body.isDarkTheme magic-side-nav nav-item > .additional-btn {
+  display: none !important;
+}
+
+/* Separators: inset hairlines rather than full-bleed rules. */
+body.isDarkTheme magic-side-nav .nav-separator {
+  height: 1px;
+  border: 0;
+  margin-block: 10px;
+  margin-inline: 6px;
+  background: var(--huma-fill-3);
+}
+
+/* Row-level controls (add / folder / visibility) stay quiet until the row
+   is hovered, so the resting sidebar is calm. */
+body.isDarkTheme magic-side-nav .additional-btn {
+  opacity: 0;
+  border-radius: 9px;
+  transition:
+    opacity var(--transition-normal),
+    color var(--transition-normal),
+    background-color var(--transition-normal);
+}
+
+body.isDarkTheme magic-side-nav .nav-item:hover .additional-btn,
+body.isDarkTheme magic-side-nav .nav-child-item:hover .additional-btn,
+body.isDarkTheme magic-side-nav .additional-btn:focus-visible {
+  opacity: 1;
+}
+
+body.isDarkTheme magic-side-nav .additional-btn:hover {
+  background: var(--huma-fill-3);
+  color: var(--huma-brand-300);
+}
+
+/* Collapse toggle echoes the panel's .icon-btn. */
+body.isDarkTheme magic-side-nav .mode-toggle {
+  border-radius: 10px;
+  color: var(--huma-fg-faint);
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal);
+}
+
+body.isDarkTheme magic-side-nav .mode-toggle:hover {
+  background: var(--huma-fill-3);
+  color: var(--huma-brand-300);
+}
+
+/* Compact (icons-only) mode: centre the glyphs and drop the edge marker,
+   which has no room to read at that width. */
+body.isDarkTheme magic-side-nav .nav-sidenav.compactMode .nav-link::before {
+  content: none;
+}
+
+body.isDarkTheme magic-side-nav .nav-sidenav.compactMode .nav-children {
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+  border-inline-start: 0;
+}
+
+/* --- Header: sticky frosted bar --- */
+body.isDarkTheme .header-wrapper,
+body.isDarkTheme main-header {
+  background: rgba(7, 11, 18, 0.7);
+  backdrop-filter: var(--huma-frost-strong);
+  -webkit-backdrop-filter: var(--huma-frost-strong);
+  border-bottom: 1px solid var(--huma-fill-3);
+}
+
+body.isDarkTheme main-header .current-work-context-title {
+  font-weight: 700;
+  color: var(--huma-fg-strong);
+  letter-spacing: -0.01em;
+}
+
+body.isDarkTheme main-header button.isActive2 mat-icon {
+  color: var(--huma-brand-300);
+}
+
+/* --- Banner --- */
+body.isDarkTheme banner {
+  background: transparent;
+}
+
+body.isDarkTheme banner .content-wrapper {
+  background: var(--huma-pane-3);
+  backdrop-filter: var(--huma-frost);
+  -webkit-backdrop-filter: var(--huma-frost);
+  border: 1px solid var(--huma-fill-3);
+  border-radius: 16px;
+  box-shadow: var(--huma-shadow-card);
+}
+
+/* --- Right panel --- */
+body.isDarkTheme right-panel .side {
+  background: var(--huma-pane-2);
+  backdrop-filter: var(--huma-frost-deep);
+  -webkit-backdrop-filter: var(--huma-frost-deep);
+  border-inline-start: 1px solid var(--huma-fill-3);
+}
+
+body.isDarkTheme right-panel .resize-handle:active {
+  background: var(--huma-brand-500);
+}
+
+body.isDarkTheme right-panel .edge-close-handle {
+  background: var(--huma-ink-800);
+  border: 1px solid var(--huma-fill-3);
+  border-radius: 12px;
+}
+
+body.isDarkTheme right-panel .edge-close-handle:hover {
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: var(--huma-glow);
+}
+
+body.isDarkTheme right-panel .edge-close-handle:hover mat-icon {
+  color: var(--huma-brand-300);
+}
+
+/* --- Scrollbars: thin, emerald on hover --- */
+body.isDarkTheme ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+body.isDarkTheme ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+body.isDarkTheme ::-webkit-scrollbar-thumb {
+  background: var(--huma-ink-600);
+  border-radius: 999px;
+}
+
+body.isDarkTheme ::-webkit-scrollbar-thumb:hover {
+  background: var(--huma-brand-600);
+}
+
+/* ==================================================================
+ * 5. CONTENT — tasks, notes, schedule, planner
+ * ================================================================== */
+
+/* Task rows read as soft glass tiles that lift on hover. */
+body.isDarkTheme task > swipe-block > .inner-wrapper > .box {
+  border-radius: var(--task-border-radius);
+  border: 1px solid transparent;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+@media (hover: hover) {
+  body.isDarkTheme task:hover > swipe-block > .inner-wrapper > .box {
+    background: var(--huma-fill-3);
+    border-color: var(--huma-fill-3);
+  }
+}
+
+body.isDarkTheme task.isSelected > swipe-block > .inner-wrapper > .box {
+  background: var(--huma-fill-4);
+  border-color: rgba(16, 185, 129, 0.28);
+  box-shadow: var(--huma-shadow-card);
+}
+
+body.isDarkTheme task.isCurrent > swipe-block > .inner-wrapper > .box {
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: var(--huma-glow);
+}
+
+body.isDarkTheme task .title {
+  font-weight: 500;
+  letter-spacing: -0.005em;
+}
+
+body.isDarkTheme task .sub-tasks task .box {
+  border-radius: 10px;
+}
+
+body.isDarkTheme task .sub-tasks task::after {
+  background: var(--huma-fill-3);
+}
+
+/* Done-toggle picks up the brand ring when the task is running. */
+body.isDarkTheme done-toggle .done-toggle-svg {
+  color: var(--huma-fg-muted);
+}
+
+body.isDarkTheme
+  task.isCurrent
+  done-toggle.is-current:not(.is-done)
+  .done-toggle-svg {
+  color: var(--huma-brand-400);
+}
+
+/* Notes as glass cards. */
+body.isDarkTheme .standard-note {
+  background: var(--huma-fill-2);
+  border: 1px solid var(--huma-fill-3);
+  border-radius: 16px;
+  backdrop-filter: var(--huma-frost);
+  -webkit-backdrop-filter: var(--huma-frost);
+  transition:
+    background-color var(--transition-normal),
+    border-color var(--transition-normal),
+    transform var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+body.isDarkTheme .standard-note:hover {
+  border-color: rgba(16, 185, 129, 0.25);
+  box-shadow: var(--huma-shadow-lift);
+  transform: translateY(-2px);
+}
+
+/* Planner tasks match the task-row language. */
+body.isDarkTheme planner-task {
+  background: var(--huma-fill-2);
+  border: 1px solid var(--huma-fill-3);
+  border-radius: var(--task-border-radius);
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+body.isDarkTheme planner-task:hover {
+  background: var(--huma-fill-3);
+  border-color: rgba(16, 185, 129, 0.22);
+}
+
+body.isDarkTheme planner-task.isSelected {
+  background: var(--huma-fill-4);
+  border-color: rgba(16, 185, 129, 0.3);
+  box-shadow: var(--huma-shadow-card);
+}
+
+/* Schedule surfaces. */
+body.isDarkTheme schedule header,
+body.isDarkTheme schedule-event.ScheduledRepeatProjection {
+  background: var(--huma-fill-4);
+}
+
+/* Task detail panel — frosted tiles. */
+body.isDarkTheme task-detail-item .mat-expansion-panel {
+  background: var(--huma-fill-2);
+  border: 1px solid var(--huma-fill-3);
+  border-radius: 14px;
+  box-shadow: none;
+}
+
+body.isDarkTheme task-detail-item .mat-expansion-panel-header:not(.mat-expanded):hover {
+  background: var(--huma-fill-3);
+}
+
+body.isDarkTheme task-detail-item .mat-expansion-panel.mat-expanded {
+  background: var(--huma-fill-3);
+}
+
+body.isDarkTheme task-detail-item .input-item.isFocused,
+body.isDarkTheme task-detail-item:focus .mat-expansion-panel {
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+body.isDarkTheme task-detail-item .markdown-unparsed {
+  background: var(--huma-fill-2);
+  border-radius: 12px;
+}
+
+body.isDarkTheme .task-detail-hint {
+  color: var(--huma-fg-faint);
+}
+
+/* ==================================================================
+ * 6. MATERIAL COMPONENT OVERRIDES
+ * ================================================================== */
+
+/* --- Cards / dialogs / menus: frosted glass --- */
+body.isDarkTheme .mat-mdc-card,
+body.isDarkTheme .mat-mdc-dialog-container .mdc-dialog__surface,
+body.isDarkTheme .mat-mdc-menu-panel,
+body.isDarkTheme .mat-mdc-autocomplete-panel,
+body.isDarkTheme .mat-mdc-select-panel {
+  background: var(--huma-pane-4) !important;
+  backdrop-filter: var(--huma-frost-strong);
+  -webkit-backdrop-filter: var(--huma-frost-strong);
+  border: 1px solid var(--huma-fill-3);
+  border-radius: 16px;
+  box-shadow: var(--huma-shadow-lift);
+}
+
+body.isDarkTheme .mat-mdc-menu-panel::before {
+  display: none;
+}
+
+body.isDarkTheme [mat-dialog-title] {
+  font-weight: 700;
+  color: var(--huma-fg-strong);
+}
+
+/* --- Buttons: emerald→aqua gradient for primary CTAs --- */
+body.isDarkTheme button[mat-raised-button][color='primary'],
+body.isDarkTheme button[mat-flat-button][color='primary'] {
+  background: linear-gradient(
+    to left,
+    var(--huma-brand-500),
+    var(--huma-aqua-500)
+  );
+  color: var(--huma-ink-950);
+  font-weight: 700;
+  border-radius: 12px;
+  box-shadow: var(--huma-glow);
+  transition:
+    filter var(--transition-normal),
+    box-shadow var(--transition-normal),
+    transform var(--transition-fast);
+}
+
+body.isDarkTheme button[mat-raised-button][color='primary']:hover,
+body.isDarkTheme button[mat-flat-button][color='primary']:hover {
+  filter: brightness(1.1);
+  box-shadow: var(--huma-glow-lg);
+}
+
+body.isDarkTheme button[mat-raised-button][color='primary']:active,
+body.isDarkTheme button[mat-flat-button][color='primary']:active {
+  transform: scale(0.97);
+}
+
+/* Icon buttons echo the panel's .icon-btn. */
+body.isDarkTheme button[mat-icon-button] {
+  border-radius: 12px;
+  transition:
+    background-color var(--transition-normal),
+    color var(--transition-normal),
+    box-shadow var(--transition-normal);
+}
+
+body.isDarkTheme button[mat-icon-button]:hover {
+  background: var(--huma-fill-3);
+  color: var(--huma-brand-300);
+}
+
+body.isDarkTheme button[mat-stroked-button] {
+  border-radius: 12px;
+  border-color: var(--huma-fill-4);
+}
+
+body.isDarkTheme button[mat-stroked-button]:hover {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: rgba(16, 185, 129, 0.06);
+}
+
+/* --- Inputs --- */
+body.isDarkTheme .mat-mdc-form-field-flex {
+  border-radius: var(--input-border-radius);
+}
+
+body.isDarkTheme .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+  background: var(--input-bg);
+  border-radius: var(--input-border-radius);
+}
+
+body.isDarkTheme
+  .mdc-text-field--outlined:not(.mdc-text-field--disabled):hover {
+  background: var(--input-bg-hover);
+}
+
+/* Global add-task bar — the panel's command-bar moment. */
+body.isDarkTheme add-task-bar.global .add-task-container {
+  background: var(--huma-pane-4);
+  backdrop-filter: var(--huma-frost-deep);
+  -webkit-backdrop-filter: var(--huma-frost-deep);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 18px;
+  box-shadow: var(--huma-shadow-lift), var(--huma-glow);
+}
+
+/* --- Chips: pill-shaped with hairline border --- */
+body.isDarkTheme .mat-mdc-standard-chip {
+  border-radius: 999px;
+  border: 1px solid var(--huma-fill-5);
+  background: var(--huma-fill-3);
+  font-weight: 600;
+  font-size: 11px;
+  transition:
+    background-color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+body.isDarkTheme .mat-mdc-chip:hover {
+  background: var(--huma-fill-4);
+  border-color: rgba(16, 185, 129, 0.3);
+}
+
+/* --- Tabs --- */
+body.isDarkTheme .mat-mdc-tab-group {
+  border-radius: 16px;
+}
+
+body.isDarkTheme .mat-mdc-tab .mdc-tab__text-label {
+  font-weight: 600;
+}
+
+/* --- Checkbox / slide-toggle pick up emerald --- */
+body.isDarkTheme .mat-mdc-checkbox.mat-mdc-checkbox-checked .mdc-checkbox__background {
+  background-color: var(--huma-brand-500) !important;
+  border-color: var(--huma-brand-500) !important;
+}
+
+body.isDarkTheme
+  .mat-mdc-slide-toggle.mat-mdc-slide-toggle-checked
+  .mdc-switch__track {
+  background: var(--huma-brand-600) !important;
+}
+
+/* --- Tooltips --- */
+body.isDarkTheme .mdc-tooltip__surface {
+  background: var(--huma-pane-5);
+  backdrop-filter: var(--huma-frost-tooltip);
+  -webkit-backdrop-filter: var(--huma-frost-tooltip);
+  border: 1px solid var(--huma-fill-3);
+  border-radius: 10px;
+  color: var(--huma-fg);
+  font-weight: 500;
+}
+
+/* --- Drag preview --- */
+body.isDarkTheme .cdk-drag-preview {
+  border-radius: var(--task-border-radius);
+  box-shadow: var(--huma-shadow-lift);
+  background: var(--huma-pane-4);
+  backdrop-filter: var(--huma-frost);
+  -webkit-backdrop-filter: var(--huma-frost);
+}
+
+/* --- Links + focus ring --- */
+body.isDarkTheme a[href] {
+  color: var(--huma-brand-300);
+  text-decoration-color: rgba(110, 231, 183, 0.35);
+}
+
+body.isDarkTheme a[href]:hover {
+  color: var(--huma-brand-200);
+}
+
+body.isDarkTheme *:focus-visible {
+  outline: 2px solid var(--huma-brand-400);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+body.isDarkTheme task:focus {
+  outline: none;
+}
+
+/* Keyboard shortcut chips. */
+body.isDarkTheme .keyboard-key {
+  background: var(--huma-ink-700);
+  border: 1px solid var(--huma-fill-5);
+  border-radius: 6px;
+  color: var(--huma-fg-muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* Smooth spring transitions on interactive elements globally. */
+body.isDarkTheme [role='button'],
+body.isDarkTheme button {
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+/* ==================================================================
+ * 7. FALLBACKS
+ * ================================================================== */
+
+/* Both fallbacks work the same way: neutralise the frost tokens and collapse
+   the translucent pane scale to solid ink. Every frosted surface reads its
+   blur from --huma-frost-* and its fill from --huma-pane-*, so redefining the
+   tokens alone makes the whole theme opaque — no per-selector overrides. */
+
+@media (prefers-reduced-transparency: reduce) {
+  body.isDarkTheme {
+    --huma-frost: none;
+    --huma-frost-strong: none;
+    --huma-frost-deep: none;
+    --huma-frost-tooltip: none;
+
+    --huma-pane-1: #0b111d;
+    --huma-pane-2: #0e1626;
+    --huma-pane-3: #0e1626;
+    --huma-pane-4: #131c2e;
+    --huma-pane-5: #131c2e;
+  }
+
+  body.isDarkTheme .header-wrapper,
+  body.isDarkTheme main-header {
+    background: var(--huma-ink-950);
+  }
+}
+
+@supports not (backdrop-filter: blur(1px)) {
+  body.isDarkTheme {
+    --huma-frost: none;
+    --huma-frost-strong: none;
+    --huma-frost-deep: none;
+    --huma-frost-tooltip: none;
+
+    --huma-pane-1: #0b111d;
+    --huma-pane-2: #0e1626;
+    --huma-pane-3: #0e1626;
+    --huma-pane-4: #131c2e;
+    --huma-pane-5: #131c2e;
+  }
+
+  body.isDarkTheme .header-wrapper,
+  body.isDarkTheme main-header {
+    background: var(--huma-ink-950);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.isDarkTheme *,
+  body.isDarkTheme *::before,
+  body.isDarkTheme *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,359 @@
+// @ts-check
+const tseslint = require('typescript-eslint');
+const angular = require('angular-eslint');
+const prettierRecommended = require('eslint-plugin-prettier/recommended');
+const preferArrow = require('eslint-plugin-prefer-arrow');
+const localRules = require('eslint-plugin-local-rules');
+
+module.exports = tseslint.config(
+  // Global ignores
+  {
+    ignores: [
+      'app-builds/**/*',
+      'dist/**',
+      'node_modules/**/*',
+      'src/app/t.const.ts',
+      'src/assets/bundled-plugins/**/*',
+      'src/app/config/env.generated.ts',
+      '.tmp/**/*',
+      'packages/plugin-api/**/*',
+      'packages/plugin-dev/**/*',
+      'packages/shared-schema/**/*',
+      'packages/super-sync-server/**/*',
+      'packages/vite-plugin/**/*',
+      'packages/*/dist/**/*',
+    ],
+  },
+  // TypeScript files
+  {
+    files: ['**/*.ts'],
+    extends: [
+      ...tseslint.configs.recommended,
+      ...angular.configs.tsRecommended,
+      prettierRecommended,
+    ],
+    processor: angular.processInlineTemplates,
+    plugins: {
+      'prefer-arrow': preferArrow,
+    },
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+      },
+    },
+    rules: {
+      // Core ESLint rules are off repo-wide (the config never spreads
+      // js.configs.recommended), so a duplicate key in an object literal reached master
+      // twice on 2026-07-30 and took the whole Karma bundle down with TS1117. tsc catches
+      // it only at build time; catch it at lint time instead.
+      'no-dupe-keys': 'error',
+      // Disabled rules
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@angular-eslint/component-selector': 'off',
+      '@angular-eslint/no-input-rename': 'off',
+      '@typescript-eslint/no-inferrable-types': 'off',
+      'no-underscore-dangle': 'off',
+      'arrow-body-style': 'off',
+      '@typescript-eslint/member-ordering': 'off',
+      'import/order': 'off',
+      'arrow-parens': 'off',
+      '@typescript-eslint/explicit-member-accessibility': 'off',
+
+      // Enabled rules
+      'prettier/prettier': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { args: 'none', caughtErrors: 'none' },
+      ],
+      '@typescript-eslint/explicit-function-return-type': [
+        'error',
+        {
+          allowExpressions: true,
+          allowTypedFunctionExpressions: true,
+          allowHigherOrderFunctions: true,
+          allowDirectConstAssertionInArrowFunctions: true,
+          allowConciseArrowFunctionExpressionsStartingWithVoid: true,
+        },
+      ],
+      '@typescript-eslint/naming-convention': [
+        'error',
+        {
+          selector: 'default',
+          format: ['camelCase', 'snake_case', 'UPPER_CASE', 'PascalCase'],
+          leadingUnderscore: 'allowSingleOrDouble',
+          trailingUnderscore: 'allow',
+          filter: { regex: '(should)|@tags', match: false },
+        },
+        {
+          selector: 'variable',
+          format: ['camelCase', 'snake_case', 'UPPER_CASE', 'PascalCase'],
+          leadingUnderscore: 'allowSingleOrDouble',
+          trailingUnderscore: 'allow',
+        },
+        { selector: 'enum', format: ['PascalCase', 'UPPER_CASE'] },
+        { selector: 'typeLike', format: ['PascalCase'] },
+      ],
+      'prefer-const': 'error',
+      '@typescript-eslint/no-unused-expressions': 'error',
+      '@typescript-eslint/no-empty-object-type': 'error',
+      'max-len': [
+        'error',
+        {
+          ignorePattern: '^import \\{.+;$',
+          ignoreRegExpLiterals: true,
+          ignoreStrings: true,
+          ignoreUrls: true,
+          code: 150,
+        },
+      ],
+      'id-blacklist': 'error',
+      // @typescript-eslint/member-delimiter-style removed in v8 - Prettier handles this
+      'no-shadow': 'off',
+      '@typescript-eslint/no-shadow': 'error',
+      'comma-dangle': ['error', 'always-multiline'],
+      'no-mixed-operators': 'error',
+      'prefer-arrow/prefer-arrow-functions': 'error',
+      '@angular-eslint/directive-selector': [
+        'error',
+        { type: 'attribute', prefix: '', style: 'camelCase' },
+      ],
+      // @typescript-eslint/ban-types replaced by specific rules in v8
+      '@typescript-eslint/no-unsafe-function-type': 'error',
+      '@typescript-eslint/no-wrapper-object-types': 'error',
+    },
+  },
+  {
+    files: ['packages/sync-core/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@sp/shared-schema',
+              message:
+                '@sp/sync-core must stay domain-agnostic; shared-schema is SP-specific.',
+            },
+          ],
+          patterns: [
+            {
+              group: [
+                '@angular/*',
+                '@ngrx/*',
+                '@sp/shared-schema/*',
+                '../shared-schema/*',
+                '../shared-schema/**',
+                '../../shared-schema/*',
+                '../../shared-schema/**',
+                '**/shared-schema/*',
+                '**/shared-schema/**',
+                'src/app/*',
+                'src/app/**',
+                '**/src/app/*',
+                '**/src/app/**',
+              ],
+              message:
+                '@sp/sync-core must not import Angular, NgRx, app code, or SP-specific schema packages.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ImportExpression',
+          message:
+            '@sp/sync-core must not use dynamic imports; they bypass package-boundary checks.',
+        },
+      ],
+    },
+  },
+  {
+    files: ['packages/sync-providers/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            {
+              name: '@sp/shared-schema',
+              message: '@sp/sync-providers must not import SP-specific schema packages.',
+            },
+          ],
+          patterns: [
+            {
+              group: [
+                '@angular/*',
+                '@ngrx/*',
+                '@sp/shared-schema/*',
+                '@sp/sync-core/*',
+                '**/shared-schema/*',
+                '**/shared-schema/**',
+                '**/sync-core/*',
+                '**/sync-core/**',
+                'src/app/*',
+                'src/app/**',
+                '**/src/app/*',
+                '**/src/app/**',
+              ],
+              message:
+                '@sp/sync-providers must use only public @sp/sync-core exports and must not import Angular, NgRx, app code, or SP-specific schema packages.',
+            },
+          ],
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'ImportExpression',
+          message:
+            '@sp/sync-providers must not use dynamic imports; they bypass package-boundary checks.',
+        },
+      ],
+    },
+  },
+  // NgRx effects files - require hydration guards on selector-based effects
+  {
+    files: ['**/*.effects.ts'],
+    plugins: {
+      'local-rules': localRules,
+    },
+    rules: {
+      'local-rules/require-hydration-guard': 'error',
+      'local-rules/require-entity-registry': 'warn',
+      'local-rules/no-actions-in-effects': 'error',
+      'local-rules/no-multi-entity-effect': 'warn',
+    },
+  },
+  // Spelled-out weekday/month names must be formatted with textLocale(), not
+  // currentLocale() (the ISO option's `sv` sentinel) or the implicit browser
+  // locale — see #8987, which recurred across three PRs. Specs are excluded:
+  // computing an expected string against an explicit locale is a legitimate
+  // test technique, and the invariant is about what the product renders.
+  {
+    files: ['src/app/**/*.ts'],
+    ignores: ['**/*.spec.ts'],
+    plugins: {
+      'local-rules': localRules,
+    },
+    rules: {
+      'local-rules/require-text-locale': 'error',
+    },
+  },
+  // Op-log persistence: inside an adapter.transaction() callback only the tx
+  // handle may be used — adapter methods enqueue behind the transaction's own
+  // FIFO queue slot on the SQLite backend and deadlock (see
+  // SqliteOpLogAdapter._serialize()).
+  {
+    files: ['src/app/op-log/**/*.ts'],
+    plugins: {
+      'local-rules': localRules,
+    },
+    rules: {
+      'local-rules/no-adapter-in-tx': 'error',
+    },
+  },
+  // Op-log persistence: every method appending rows to STORE_NAMES.OPS must
+  // report the committed seqs to TabSeqFrontierService (#9438). A missed
+  // observeOwnWrite makes the tab's next own write look like a foreign seq
+  // gap → sticky divergence → snapshot saves AND compaction silently disabled
+  // for the whole session, on all platforms — a failure mode nothing crashes
+  // on, so lint is the only place it can fail loudly. Specs are exempt: they
+  // seed fake stores without a live frontier to report to.
+  {
+    files: ['src/app/op-log/**/*.ts'],
+    ignores: ['src/app/op-log/**/*.spec.ts'],
+    plugins: {
+      'local-rules': localRules,
+    },
+    rules: {
+      'local-rules/require-frontier-report-on-ops-append': 'error',
+    },
+  },
+  // App code must route logging through Log/SyncLog/OpLog/... helpers.
+  // Direct console.* calls bypass the exportable log history users attach
+  // to bug reports. The Log implementation itself, tests, and benchmarks
+  // (which intentionally dump timing numbers to stdout) are exempt.
+  {
+    files: ['src/app/**/*.ts'],
+    ignores: ['src/app/**/*.spec.ts', 'src/app/**/*.benchmark.ts', 'src/app/core/log.ts'],
+    rules: {
+      'no-console': 'error',
+    },
+  },
+  // Durable-clock pruning is store-owned (#9096): every clock persisted by
+  // the client must be pruned with the full preserve set (current client +
+  // latest full-state author), which OperationLogStoreService assembles in
+  // pruneClockForStorage. Caller-site pruning is how the import author got
+  // silently evicted (#9089/#9096), so importing limitVectorClockSize outside
+  // the store (from the client wrapper or @sp/sync-core) is fenced off.
+  // Exempt: the wrapper itself (re-exports the shared impl), the store
+  // service (the choke point), and specs (simulate server-side pruning).
+  {
+    files: ['src/app/**/*.ts'],
+    ignores: [
+      'src/app/**/*.spec.ts',
+      'src/app/core/util/vector-clock.ts',
+      'src/app/op-log/persistence/operation-log-store.service.ts',
+    ],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['**/core/util/vector-clock', '@sp/sync-core'],
+              importNamePattern: '^limitVectorClockSize$',
+              message:
+                'Durable-clock pruning is store-owned (#9096): use OperationLogStoreService.pruneClockForStorage instead of pruning at the call site.',
+            },
+          ],
+        },
+      ],
+    },
+  },
+  // Service size cap (AGENTS.md → Project rules): no service may exceed 1200
+  // lines. 'error' so a new service crossing the cap fails CI on the PR that
+  // introduces it — 'warn' would be inert, since `ng lint` defaults to
+  // maxWarnings: -1 and never fails a build on warnings. Spec files end in
+  // `.service.spec.ts`, so they are not matched by this glob and are exempt.
+  {
+    files: ['**/*.service.ts'],
+    rules: {
+      'max-lines': ['error', { max: 1200 }],
+    },
+  },
+  // Grandfathered offenders: services already over the cap, downgraded to a
+  // (non-failing) warning so they don't red-CI while they are split down. They
+  // still warn at their real size, so the debt stays visible in lint output.
+  // This list may only ever SHRINK — a new entry means the cap was bypassed.
+  // Delete the block once every file below is under 1200 lines.
+  {
+    files: [
+      'src/app/op-log/sync/conflict-resolution.service.ts',
+      'src/app/op-log/sync-providers/file-based/file-based-sync-adapter.service.ts',
+      'src/app/op-log/persistence/operation-log-store.service.ts',
+      'src/app/op-log/sync/operation-log-sync.service.ts',
+      'src/app/plugins/plugin-bridge.service.ts',
+      'src/app/plugins/plugin.service.ts',
+      'src/app/imex/sync/sync-wrapper.service.ts',
+      'src/app/features/tasks/task.service.ts',
+    ],
+    rules: {
+      'max-lines': ['warn', { max: 1200 }],
+    },
+  },
+  // HTML files
+  {
+    files: ['**/*.html'],
+    extends: [...angular.configs.templateRecommended, prettierRecommended],
+    rules: {
+      '@angular-eslint/template/no-negated-async': 'off',
+      'prettier/prettier': 'error',
+    },
+  },
+);

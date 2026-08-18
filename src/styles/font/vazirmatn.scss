@@ -1,0 +1,46 @@
+// Vazirmatn FD — Persian/Arabic-capable UI face with Farsi digit forms.
+// Ships with the Huma theme, but the @font-face lives here rather than in
+// assets/themes/huma.css: built-in themes must stay free of fetch-bearing
+// constructs so they double as upload templates
+// (see tools/theme-assets.test.js — "standalone upload templates").
+// The theme only sets `font-family`; these faces make the family resolvable.
+
+@font-face {
+  font-family: 'Vazirmatn FD';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../../assets/fonts/Vazirmatn-FD-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Vazirmatn FD';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../../assets/fonts/Vazirmatn-FD-Medium.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Vazirmatn FD';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../../assets/fonts/Vazirmatn-FD-SemiBold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Vazirmatn FD';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('../../assets/fonts/Vazirmatn-FD-Bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Vazirmatn FD';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('../../assets/fonts/Vazirmatn-FD-ExtraBold.woff2') format('woff2');
+}
