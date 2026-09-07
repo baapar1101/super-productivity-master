@@ -1,0 +1,20 @@
+<div class="plane-avatar-group">
+  @for (person of visible(); track person.id) {
+    <span
+      class="plane-avatar"
+      [matTooltip]="person.name"
+    >
+      @if (person.imgUrl) {
+        <img
+          [src]="person.imgUrl"
+          [alt]="person.name"
+        />
+      } @else {
+        <span class="plane-avatar-initials">{{ initials(person.name) }}</span>
+      }
+    </span>
+  }
+  @if (overflowCount() > 0) {
+    <span class="plane-avatar plane-avatar-overflow">+{{ overflowCount() }}</span>
+  }
+</div>

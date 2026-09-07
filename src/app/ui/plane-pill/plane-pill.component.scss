@@ -1,0 +1,63 @@
+@use '../../../styles/_globals.scss' as *;
+
+.plane-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s);
+  border: 1px solid var(--border-subtle);
+  background: var(--layer-1);
+  color: var(--text-secondary);
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+
+  &[data-size='xs'] {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+  &[data-size='sm'] {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+  &[data-size='md'] {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+  &[data-size='lg'] {
+    padding: 5px 12px;
+    font-size: 13px;
+  }
+
+  &[data-radius='square'] {
+    border-radius: var(--radius-md, 6px);
+  }
+  &[data-radius='circle'] {
+    border-radius: 999px;
+  }
+
+  &[data-variant='primary'] {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--c-primary) 16%, transparent);
+    color: var(--c-primary);
+  }
+  &[data-variant='success'] {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--color-success) 18%, transparent);
+    color: var(--color-success);
+  }
+  &[data-variant='warning'] {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--color-warning) 18%, transparent);
+    color: var(--color-warning);
+  }
+  &[data-variant='error'] {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--color-danger) 18%, transparent);
+    color: var(--color-danger);
+  }
+  &[data-variant='info'] {
+    border-color: transparent;
+    background: color-mix(in srgb, var(--c-accent) 18%, transparent);
+    color: var(--c-accent);
+  }
+}

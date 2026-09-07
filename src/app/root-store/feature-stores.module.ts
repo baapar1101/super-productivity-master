@@ -45,6 +45,23 @@ import {
   sectionReducer,
 } from '../features/section/store/section.reducer';
 import { TAG_FEATURE_NAME, tagReducer } from '../features/tag/store/tag.reducer';
+import {
+  WORKFLOW_STATE_FEATURE_NAME,
+  workflowStateReducer,
+} from '../features/workflow-state/store/workflow-state.reducer';
+import {
+  ISSUE_LABEL_FEATURE_NAME,
+  issueLabelReducer,
+} from '../features/issue-label/store/issue-label.reducer';
+import { CYCLE_FEATURE_NAME, cycleReducer } from '../features/cycle/store/cycle.reducer';
+import {
+  MODULE_FEATURE_NAME,
+  moduleReducer,
+} from '../features/module/store/module.reducer';
+import {
+  ESTIMATE_FEATURE_NAME,
+  estimateReducer,
+} from '../features/estimate/store/estimate.reducer';
 import { TagEffects } from '../features/tag/store/tag.effects';
 import {
   TASK_REPEAT_CFG_FEATURE_NAME,
@@ -176,6 +193,14 @@ import {
     StoreModule.forFeature(PLUGIN_USER_DATA_FEATURE_NAME, pluginUserDataReducer),
     StoreModule.forFeature(PLUGIN_METADATA_FEATURE_NAME, pluginMetadataReducer),
     StoreModule.forFeature(REMINDER_FEATURE_NAME, reminderReducer),
+
+    // Plane-parity collections — pure client-side config, persisted through the
+    // op-log like boards, so no effects are needed.
+    StoreModule.forFeature(WORKFLOW_STATE_FEATURE_NAME, workflowStateReducer),
+    StoreModule.forFeature(ISSUE_LABEL_FEATURE_NAME, issueLabelReducer),
+    StoreModule.forFeature(CYCLE_FEATURE_NAME, cycleReducer),
+    StoreModule.forFeature(MODULE_FEATURE_NAME, moduleReducer),
+    StoreModule.forFeature(ESTIMATE_FEATURE_NAME, estimateReducer),
 
     // EFFECTS ONLY
     EffectsModule.forFeature([

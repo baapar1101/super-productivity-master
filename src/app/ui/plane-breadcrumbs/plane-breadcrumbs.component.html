@@ -1,0 +1,26 @@
+<nav
+  class="plane-breadcrumbs"
+  aria-label="Breadcrumb"
+>
+  @for (item of items(); track item.label; let isLast = $last) {
+    @if (item.icon) {
+      <mat-icon class="plane-breadcrumb-icon">{{ item.icon }}</mat-icon>
+    }
+    @if (item.route && !isLast) {
+      <a
+        class="plane-breadcrumb-link"
+        [routerLink]="item.route"
+        >{{ item.label }}</a
+      >
+    } @else {
+      <span
+        class="plane-breadcrumb-label"
+        [class.is-current]="isLast"
+        >{{ item.label }}</span
+      >
+    }
+    @if (!isLast) {
+      <span class="plane-breadcrumb-separator">/</span>
+    }
+  }
+</nav>

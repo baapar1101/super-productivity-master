@@ -25,6 +25,21 @@ export interface ProjectBasicCfg {
   noteIds: string[];
 }
 
+/**
+ * Which Plane-parity sub-pages this project exposes in its tab bar.
+ *
+ * Optional and nested so existing projects need no migration — an absent
+ * block reads as "all off" (see `getPlaneFeatureFlags`), mirroring how the
+ * global `appFeatures()` flags gate the top-level sidebar.
+ */
+export interface PlaneFeatureFlags {
+  cyclesEnabled?: boolean;
+  modulesEnabled?: boolean;
+  viewsEnabled?: boolean;
+  pagesEnabled?: boolean;
+  intakeEnabled?: boolean;
+}
+
 // Omit conflicting properties from PluginProject when extending
 export interface ProjectCopy
   extends
@@ -33,6 +48,7 @@ export interface ProjectCopy
     WorkContextCommon {
   // Additional app-specific fields
   issueIntegrationCfgs?: IssueIntegrationCfgs;
+  planeFeatureFlags?: PlaneFeatureFlags;
 }
 
 export type Project = Readonly<ProjectCopy>;

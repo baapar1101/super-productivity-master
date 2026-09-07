@@ -579,6 +579,47 @@ body.isDarkTheme {
   --input-border-color-focus: var(--focus-ring-color);
   --input-border-color-invalid: var(--palette-warn-500);
   --input-border-radius: var(--card-border-radius);
+
+  // -------------------------------------------------------------------------
+  // Plane-parity semantic aliases (Canvas/Surface/Layer + priority/state-group)
+  //
+  // Purely additive aliases onto the existing primitive ramp — every shipped
+  // and user-installed theme gets these for free with zero per-theme edits.
+  // Plane's `bg-canvas`/`bg-surface-1..3` map directly onto the existing
+  // `--surface-0..3` names (no alias needed); `--layer-*` has no existing SP
+  // equivalent (one elevation step above its paired surface) so it gets new
+  // names. Hover/active/selected layer variants reuse the existing
+  // `--state-hover` / `--state-pressed` / `--state-selected` overlay colors
+  // above — consumers compose e.g. `background: var(--state-hover)` on top
+  // of a `--layer-*` base rather than needing dedicated per-layer tokens.
+  // -------------------------------------------------------------------------
+  --layer-1: var(--surface-2);
+  --layer-2: var(--surface-3);
+  --layer-3: var(--surface-4);
+
+  --text-primary: var(--ink-strong);
+  --text-secondary: var(--ink);
+  --text-tertiary: var(--ink-muted);
+  --text-placeholder: var(--ink-muted);
+
+  --border-subtle: var(--separator);
+  --border-strong: var(--divider);
+
+  // Priority — no existing SP equivalent, genuinely new domain colors.
+  // Urgent/high/none derive from the existing traffic-light + ink primitives;
+  // medium/low are new fixed hues (no primitive sits between warning/danger).
+  --priority-urgent: var(--color-danger);
+  --priority-high: var(--color-warning);
+  --priority-medium: #eab308;
+  --priority-low: #3b82f6;
+  --priority-none: var(--ink-muted);
+
+  // Workflow-state groups — Plane's 5 fixed groups, no existing SP equivalent.
+  --state-group-backlog: var(--ink-muted);
+  --state-group-unstarted: rgba(var(--ink-on-channel), 0.5);
+  --state-group-started: var(--color-warning);
+  --state-group-completed: var(--color-success);
+  --state-group-cancelled: var(--color-danger);
 }
 
 // -----------------------------

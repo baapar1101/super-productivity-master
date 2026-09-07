@@ -31,6 +31,11 @@ export const ENTITY_TYPES = [
   'REMINDER',
   'PLUGIN_USER_DATA',
   'PLUGIN_METADATA',
+  'WORKFLOW_STATE',
+  'ISSUE_LABEL',
+  'CYCLE',
+  'MODULE',
+  'ESTIMATE',
   'MIGRATION',
   'RECOVERY', // For disaster recovery imports
   'ALL', // For full state imports (sync, backup)

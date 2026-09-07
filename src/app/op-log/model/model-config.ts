@@ -42,8 +42,20 @@ import {
   PluginUserDataState,
 } from '../../plugins/plugin-persistence.model';
 import { menuTreeInitialState } from '../../features/menu-tree/store/menu-tree.reducer';
+import { WorkflowStateState } from '../../features/workflow-state/workflow-state.model';
+import { initialWorkflowStateState } from '../../features/workflow-state/store/workflow-state.reducer';
+import { IssueLabelState } from '../../features/issue-label/issue-label.model';
+import { initialIssueLabelState } from '../../features/issue-label/store/issue-label.reducer';
+import { CycleState } from '../../features/cycle/cycle.model';
+import { initialCycleState } from '../../features/cycle/store/cycle.reducer';
+import { ModuleState } from '../../features/module/module.model';
+import { initialModuleState } from '../../features/module/store/module.reducer';
+import { EstimateState } from '../../features/estimate/estimate.model';
+import { initialEstimateState } from '../../features/estimate/store/estimate.reducer';
 
-export const CROSS_MODEL_VERSION = 4.5 as const;
+// 4.6: adds the Plane-parity collections (workflowState, issueLabel, cycle,
+// module, estimate). They default to empty, so older data loads unchanged.
+export const CROSS_MODEL_VERSION = 4.6 as const;
 
 export type AllModelConfig = {
   project: ModelCfg<ProjectState>;
@@ -63,6 +75,11 @@ export type AllModelConfig = {
   timeTracking: ModelCfg<TimeTrackingState>;
   pluginUserData: ModelCfg<PluginUserDataState | undefined>;
   pluginMetadata: ModelCfg<PluginMetaDataState | undefined>;
+  workflowState: ModelCfg<WorkflowStateState>;
+  issueLabel: ModelCfg<IssueLabelState>;
+  cycle: ModelCfg<CycleState>;
+  module: ModelCfg<ModuleState>;
+  estimate: ModelCfg<EstimateState>;
   archiveYoung: ModelCfg<ArchiveModel>;
   archiveOld: ModelCfg<ArchiveModel>;
 };
@@ -120,6 +137,31 @@ export const MODEL_CONFIGS: AllModelConfig = {
   boards: {
     defaultData: initialBoardsState,
     isMainFileModel: true,
+  },
+  workflowState: {
+    defaultData: initialWorkflowStateState,
+    isMainFileModel: true,
+    repair: fixEntityStateConsistency,
+  },
+  issueLabel: {
+    defaultData: initialIssueLabelState,
+    isMainFileModel: true,
+    repair: fixEntityStateConsistency,
+  },
+  cycle: {
+    defaultData: initialCycleState,
+    isMainFileModel: true,
+    repair: fixEntityStateConsistency,
+  },
+  module: {
+    defaultData: initialModuleState,
+    isMainFileModel: true,
+    repair: fixEntityStateConsistency,
+  },
+  estimate: {
+    defaultData: initialEstimateState,
+    isMainFileModel: true,
+    repair: fixEntityStateConsistency,
   },
   menuTree: {
     defaultData: menuTreeInitialState,

@@ -140,6 +140,22 @@ export interface TaskCopy
   remindAt?: number;
   repeatCfgId?: string;
   _hideSubTasksMode?: HideSubTasksMode;
+
+  // ---------------------------------------------------------------------------
+  // Plane-parity workflow fields.
+  //
+  // All optional and absent by default (NOT defaulted in DEFAULT_TASK):
+  // `undefined` is the correct "this project doesn't use Plane features" state,
+  // so existing tasks need no migration. Ids reference the normalized
+  // workflowState / issueLabel / cycle / module / estimate collections rather
+  // than embedding those objects, matching how `projectId` already works.
+  // ---------------------------------------------------------------------------
+  workflowStateId?: string | null;
+  priority?: 'urgent' | 'high' | 'medium' | 'low' | 'none' | null;
+  labelIds?: string[];
+  cycleId?: string | null;
+  moduleIds?: string[];
+  estimatePointId?: string | null;
 }
 
 /**
