@@ -14,6 +14,13 @@ export const DEFAULT_PROJECT: Project = {
   isDone: false,
   doneOn: null,
   isEnableBacklog: false,
+  planeFeatureFlags: {
+    cyclesEnabled: false,
+    modulesEnabled: false,
+    viewsEnabled: false,
+    pagesEnabled: false,
+    intakeEnabled: false,
+  },
   backlogTaskIds: [],
   noteIds: [],
   ...WORK_CONTEXT_DEFAULT_COMMON,

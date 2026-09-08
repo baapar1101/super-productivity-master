@@ -1,0 +1,18 @@
+@if (isShowTabs()) {
+  <nav class="project-tabs">
+    @for (tab of tabs(); track tab.key) {
+      <a
+        class="project-tab"
+        [routerLink]="['../', tab.route]"
+        routerLinkActive="is-active"
+        >
+        <mat-icon class="project-tab-icon">{{ tab.icon }}</mat-icon>
+        <span class="project-tab-label">{{ tab.label }}</span>
+      </a>
+    }
+  </nav>
+}
+
+<div class="project-shell-content">
+  <router-outlet></router-outlet>
+</div>
