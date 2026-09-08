@@ -60,4 +60,10 @@ export const createAppDataCompleteMock = (): AppDataComplete => ({
 
   pluginMetadata: [],
   pluginUserData: [],
+
+  workflowState: createEmptyEntity(),
+  issueLabel: createEmptyEntity(),
+  cycle: createEmptyEntity(),
+  module: createEmptyEntity(),
+  estimate: createEmptyEntity(),
 });

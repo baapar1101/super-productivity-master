@@ -42,6 +42,11 @@ import { TIME_TRACKING_FEATURE_KEY } from '../../features/time-tracking/store/ti
 import { appStateFeatureKey } from '../../root-store/app-state/app-state.reducer';
 import { getDbDateStr } from '../../util/get-db-date-str';
 import { initialSectionState } from '../../features/section/store/section.reducer';
+import { initialWorkflowStateState } from '../../features/workflow-state/store/workflow-state.reducer';
+import { initialIssueLabelState } from '../../features/issue-label/store/issue-label.reducer';
+import { initialCycleState } from '../../features/cycle/store/cycle.reducer';
+import { initialModuleState } from '../../features/module/store/module.reducer';
+import { initialEstimateState } from '../../features/estimate/store/estimate.reducer';
 
 /**
  * Creates a minimal valid AppDataComplete state.
@@ -105,6 +110,11 @@ export const createValidAppData = (
     timeTracking: initialTimeTrackingState,
     pluginUserData: [],
     pluginMetadata: [],
+    workflowState: initialWorkflowStateState,
+    issueLabel: initialIssueLabelState,
+    cycle: initialCycleState,
+    module: initialModuleState,
+    estimate: initialEstimateState,
     archiveYoung: {
       task: { ids: [], entities: {} },
       timeTracking: initialTimeTrackingState,
@@ -356,6 +366,11 @@ export const rootStateToAppData = (
     reminders: additionalData.reminders || [],
     pluginUserData: additionalData.pluginUserData || [],
     pluginMetadata: additionalData.pluginMetadata || [],
+    workflowState: initialWorkflowStateState,
+    issueLabel: initialIssueLabelState,
+    cycle: initialCycleState,
+    module: initialModuleState,
+    estimate: initialEstimateState,
     archiveYoung: additionalData.archiveYoung || {
       task: { ids: [], entities: {} },
       timeTracking: initialTimeTrackingState,

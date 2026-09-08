@@ -1013,6 +1013,11 @@
       },
       "FORM_BASIC": {
         "L_ENABLE_BACKLOG": "Enable Project Backlog",
+        "L_ENABLE_CYCLES": "Enable Cycles",
+        "L_ENABLE_INTAKE": "Enable Intake",
+        "L_ENABLE_MODULES": "Enable Modules",
+        "L_ENABLE_PAGES": "Enable Pages",
+        "L_ENABLE_VIEWS": "Enable Views",
         "L_IS_HIDDEN_FROM_MENU": "Hide project from sidebar",
         "L_TITLE": "Project Name",
         "TITLE": "Basic Settings"

@@ -50,6 +50,44 @@ export const buildWorkContextSettingsFormCfg = (
           label: T.F.PROJECT.FORM_BASIC.L_IS_HIDDEN_FROM_MENU,
         },
       },
+      // Plane-parity sub-pages. Each toggles one tab in the project's tab bar
+      // (see ProjectShellComponent) — the same shape as the app-wide
+      // `appFeatures()` gating, but scoped to a single project.
+      {
+        key: 'planeFeatureFlags.cyclesEnabled',
+        type: 'checkbox',
+        templateOptions: {
+          label: T.F.PROJECT.FORM_BASIC.L_ENABLE_CYCLES,
+        },
+      },
+      {
+        key: 'planeFeatureFlags.modulesEnabled',
+        type: 'checkbox',
+        templateOptions: {
+          label: T.F.PROJECT.FORM_BASIC.L_ENABLE_MODULES,
+        },
+      },
+      {
+        key: 'planeFeatureFlags.viewsEnabled',
+        type: 'checkbox',
+        templateOptions: {
+          label: T.F.PROJECT.FORM_BASIC.L_ENABLE_VIEWS,
+        },
+      },
+      {
+        key: 'planeFeatureFlags.pagesEnabled',
+        type: 'checkbox',
+        templateOptions: {
+          label: T.F.PROJECT.FORM_BASIC.L_ENABLE_PAGES,
+        },
+      },
+      {
+        key: 'planeFeatureFlags.intakeEnabled',
+        type: 'checkbox',
+        templateOptions: {
+          label: T.F.PROJECT.FORM_BASIC.L_ENABLE_INTAKE,
+        },
+      },
     );
   }
 

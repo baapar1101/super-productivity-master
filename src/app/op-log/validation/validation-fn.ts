@@ -9,6 +9,11 @@ import {
 } from '../../features/time-tracking/time-tracking.model';
 import { ProjectState } from '../../features/project/project.model';
 import { SectionState } from '../../features/section/section.model';
+import { WorkflowStateState } from '../../features/workflow-state/workflow-state.model';
+import { IssueLabelState } from '../../features/issue-label/issue-label.model';
+import { CycleState } from '../../features/cycle/cycle.model';
+import { ModuleState } from '../../features/module/module.model';
+import { EstimateState } from '../../features/estimate/estimate.model';
 import { MenuTreeState } from '../../features/menu-tree/store/menu-tree.model';
 import { TaskState } from '../../features/tasks/task.model';
 import { createValidate, IValidation } from 'typia';
@@ -55,6 +60,11 @@ const _validateTimeTracking = createValidate<TimeTrackingState>();
 const _validatePluginUserData = createValidate<PluginUserDataState>();
 const _validatePluginMetadata = createValidate<PluginMetaDataState>();
 const _validateSection = createValidate<SectionState>();
+const _validateWorkflowState = createValidate<WorkflowStateState>();
+const _validateIssueLabel = createValidate<IssueLabelState>();
+const _validateCycle = createValidate<CycleState>();
+const _validateModule = createValidate<ModuleState>();
+const _validateEstimate = createValidate<EstimateState>();
 
 /**
  * `Task.issueType` and `IssueProvider.issueProviderKey` are validated against the
@@ -193,6 +203,14 @@ export const appDataValidators: {
     _wrapValidate(_validatePluginMetadata(d), d, false, 'pluginMetadata'),
   section: <R>(d: R | SectionState) =>
     _wrapValidate(_validateSection(d), d, true, 'section'),
+  workflowState: <R>(d: R | WorkflowStateState) =>
+    _wrapValidate(_validateWorkflowState(d), d, true, 'workflowState'),
+  issueLabel: <R>(d: R | IssueLabelState) =>
+    _wrapValidate(_validateIssueLabel(d), d, true, 'issueLabel'),
+  cycle: <R>(d: R | CycleState) => _wrapValidate(_validateCycle(d), d, true, 'cycle'),
+  module: <R>(d: R | ModuleState) => _wrapValidate(_validateModule(d), d, true, 'module'),
+  estimate: <R>(d: R | EstimateState) =>
+    _wrapValidate(_validateEstimate(d), d, true, 'estimate'),
 } as const;
 
 const logValidationFailure = <R>(

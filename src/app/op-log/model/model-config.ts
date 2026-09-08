@@ -75,11 +75,14 @@ export type AllModelConfig = {
   timeTracking: ModelCfg<TimeTrackingState>;
   pluginUserData: ModelCfg<PluginUserDataState | undefined>;
   pluginMetadata: ModelCfg<PluginMetaDataState | undefined>;
-  workflowState: ModelCfg<WorkflowStateState>;
-  issueLabel: ModelCfg<IssueLabelState>;
-  cycle: ModelCfg<CycleState>;
-  module: ModelCfg<ModuleState>;
-  estimate: ModelCfg<EstimateState>;
+  // `| undefined` (like pluginUserData/pluginMetadata) so snapshots written by
+  // releases predating these collections still validate — full-state
+  // validation would otherwise reject every older backup and sync payload.
+  workflowState: ModelCfg<WorkflowStateState | undefined>;
+  issueLabel: ModelCfg<IssueLabelState | undefined>;
+  cycle: ModelCfg<CycleState | undefined>;
+  module: ModelCfg<ModuleState | undefined>;
+  estimate: ModelCfg<EstimateState | undefined>;
   archiveYoung: ModelCfg<ArchiveModel>;
   archiveOld: ModelCfg<ArchiveModel>;
 };

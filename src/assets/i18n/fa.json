@@ -967,6 +967,11 @@
       },
       "FORM_BASIC": {
         "L_ENABLE_BACKLOG": "پروژه Backlog را فعال کنید",
+        "L_ENABLE_CYCLES": "فعال‌سازی چرخه‌ها (Cycles)",
+        "L_ENABLE_INTAKE": "فعال‌سازی ورودی (Intake)",
+        "L_ENABLE_MODULES": "فعال‌سازی ماژول‌ها (Modules)",
+        "L_ENABLE_PAGES": "فعال‌سازی صفحه‌ها (Pages)",
+        "L_ENABLE_VIEWS": "فعال‌سازی نماها (Views)",
         "L_IS_HIDDEN_FROM_MENU": "پروژه را از منو مخفی کنید",
         "L_TITLE": "نام پروژه",
         "TITLE": "تنظیمات پایه"
