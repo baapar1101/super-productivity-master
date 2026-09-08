@@ -1,0 +1,80 @@
+@use '../../../../styles/_globals.scss' as *;
+
+:host {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.board {
+  display: flex;
+  gap: var(--s2);
+  height: 100%;
+  padding: var(--s2);
+  overflow-x: auto;
+  align-items: flex-start;
+}
+
+.board-column {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 280px;
+  max-height: 100%;
+  min-height: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg, 8px);
+  background: var(--layer-1);
+}
+
+.board-column-header {
+  display: flex;
+  align-items: center;
+  gap: var(--s);
+  flex-shrink: 0;
+  padding: var(--s);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.board-column-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.board-column-count {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  font-variant-numeric: tabular-nums;
+}
+
+.board-column-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s);
+  flex: 1;
+  min-height: 60px;
+  padding: var(--s);
+  overflow-y: auto;
+}
+
+.board-column-empty {
+  margin: 0;
+  padding: var(--s);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+// CDK drag feedback
+.cdk-drag-preview {
+  border-radius: var(--radius-md, 6px);
+  box-shadow: var(--card-shadow);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0.4;
+}
+
+.cdk-drop-list-dragging .work-item-card {
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
