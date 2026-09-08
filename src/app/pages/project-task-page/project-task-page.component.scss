@@ -14,3 +14,23 @@
     flex: 1;
   }
 }
+
+// Transitional escape hatch between Plane's List layout and SP's classic work
+// view. Removed once the remaining Plane layouts land and the classic view is
+// no longer the fallback.
+.classic-view-switch {
+  align-self: center;
+  margin: var(--s) auto var(--s2);
+  padding: 4px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md, 6px);
+  background: var(--layer-1);
+  color: var(--text-tertiary);
+  font-size: 11px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--state-hover);
+  }
+}

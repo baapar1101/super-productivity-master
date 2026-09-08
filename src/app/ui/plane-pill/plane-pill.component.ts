@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-export type PlanePillVariant = 'default' | 'primary' | 'success' | 'warning' | 'error' | 'info';
+export type PlanePillVariant =
+  | 'default'
+  | 'primary'
+  | 'success'
+  | 'warning'
+  | 'error'
+  | 'info';
 export type PlanePillSize = 'xs' | 'sm' | 'md' | 'lg';
 export type PlanePillRadius = 'square' | 'circle';
 

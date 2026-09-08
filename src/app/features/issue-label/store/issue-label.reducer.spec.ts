@@ -54,9 +54,10 @@ describe('selectIssueLabelsForProject', () => {
       mkLabel('a', { sortOrder: 1 }),
       mkLabel('other', { projectId: 'P2' }),
     ];
-    expect(selectIssueLabelsForProject('P1').projector(all).map((l) => l.id)).toEqual([
-      'a',
-      'b',
-    ]);
+    expect(
+      selectIssueLabelsForProject('P1')
+        .projector(all)
+        .map((l) => l.id),
+    ).toEqual(['a', 'b']);
   });
 });

@@ -19,7 +19,9 @@ describe('PlaneStateDotComponent', () => {
   it('falls back to the group color when no explicit color is set', () => {
     fixture.componentRef.setInput('group', 'completed');
     fixture.detectChanges();
-    expect(fixture.componentInstance.resolvedColor()).toBe('var(--state-group-completed)');
+    expect(fixture.componentInstance.resolvedColor()).toBe(
+      'var(--state-group-completed)',
+    );
   });
 
   it('prefers an explicit color over the group fallback', () => {

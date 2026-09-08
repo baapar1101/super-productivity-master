@@ -1,0 +1,70 @@
+@let vm = item();
+@let task = vm.task;
+@let due = formatDue(task.dueDay, task.dueWithTime);
+
+<div
+  class="work-item-row"
+  [class.is-selected]="isSelected()"
+  [class.is-done]="task.isDone"
+  (click)="onSelect()"
+  (keydown.enter)="onSelect()"
+  tabindex="0"
+  role="button"
+>
+  <button
+    class="done-btn"
+    type="button"
+    [attr.aria-label]="task.isDone ? 'Mark as not done' : 'Mark as done'"
+    (click)="onToggleDone($event)"
+  >
+    <mat-icon>{{ task.isDone ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+  </button>
+
+  <plane-priority-icon
+    class="row-priority"
+    [priority]="vm.priority"
+    [matTooltip]="'Priority: ' + vm.priority"
+  ></plane-priority-icon>
+
+  <plane-state-dot
+    class="row-state-dot"
+    [color]="vm.state.color"
+    [group]="vm.state.group"
+    [matTooltip]="vm.state.name"
+  ></plane-state-dot>
+
+  <span class="row-title">{{ task.title }}</span>
+
+  <span class="row-props">
+    @if (vm.subTaskCount > 0) {
+      <span
+        class="row-subtasks"
+        [matTooltip]="vm.subTaskCount + ' sub-items'"
+      >
+        <mat-icon>account_tree</mat-icon>{{ vm.subTaskCount }}
+      </span>
+    }
+
+    @for (label of vm.labels; track label.id) {
+      <plane-pill
+        size="xs"
+        radius="circle"
+      >
+        <span
+          class="label-dot"
+          [style.background-color]="label.color"
+        ></span>
+        {{ label.name }}
+      </plane-pill>
+    }
+
+    @if (due) {
+      <plane-pill
+        size="xs"
+        radius="circle"
+        [matTooltip]="'Due ' + due"
+        >{{ due }}</plane-pill
+      >
+    }
+  </span>
+</div>

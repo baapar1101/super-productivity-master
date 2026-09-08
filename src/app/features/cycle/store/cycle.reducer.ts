@@ -1,5 +1,11 @@
 import { createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
+import {
+  createFeatureSelector,
+  createReducer,
+  createSelector,
+  MemoizedSelector,
+  on,
+} from '@ngrx/store';
 import { Cycle, CycleState } from '../cycle.model';
 import { loadAllData } from '../../../root-store/meta/load-all-data.action';
 import { AppDataComplete } from '../../../op-log/model/model-config';
@@ -23,7 +29,9 @@ export const selectCycleEntities = createSelector(
 );
 export const selectAllCycleIds = createSelector(selectCycleFeatureState, selectIds);
 
-export const selectCyclesForProject = (projectId: string) =>
+export const selectCyclesForProject = (
+  projectId: string,
+): MemoizedSelector<object, Cycle[]> =>
   createSelector(selectAllCycles, (cycles) =>
     cycles.filter((cycle) => cycle.projectId === projectId),
   );

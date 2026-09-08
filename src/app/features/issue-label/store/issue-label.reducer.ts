@@ -1,13 +1,15 @@
 import { createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
+import {
+  createFeatureSelector,
+  createReducer,
+  createSelector,
+  MemoizedSelector,
+  on,
+} from '@ngrx/store';
 import { IssueLabel, IssueLabelState } from '../issue-label.model';
 import { loadAllData } from '../../../root-store/meta/load-all-data.action';
 import { AppDataComplete } from '../../../op-log/model/model-config';
-import {
-  addIssueLabel,
-  deleteIssueLabel,
-  updateIssueLabel,
-} from './issue-label.actions';
+import { addIssueLabel, deleteIssueLabel, updateIssueLabel } from './issue-label.actions';
 
 export const ISSUE_LABEL_FEATURE_NAME = 'issueLabel';
 
@@ -36,7 +38,9 @@ export const selectAllIssueLabelIds = createSelector(
   selectIds,
 );
 
-export const selectIssueLabelsForProject = (projectId: string) =>
+export const selectIssueLabelsForProject = (
+  projectId: string,
+): MemoizedSelector<object, IssueLabel[]> =>
   createSelector(selectAllIssueLabels, (labels) =>
     labels
       .filter((label) => label.projectId === projectId)

@@ -17,8 +17,9 @@ import {
 export class WorkflowStateService {
   private _store = inject(Store);
 
-  readonly workflowStates$: Observable<WorkflowState[]> =
-    this._store.select(selectAllWorkflowStates);
+  readonly workflowStates$: Observable<WorkflowState[]> = this._store.select(
+    selectAllWorkflowStates,
+  );
 
   getForProject$(projectId: string): Observable<WorkflowState[]> {
     return this._store.select(selectWorkflowStatesForProject(projectId));

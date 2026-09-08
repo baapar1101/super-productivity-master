@@ -44,6 +44,10 @@ describe('moduleReducer', () => {
 describe('selectModulesForProject', () => {
   it('filters by project', () => {
     const all = [mkModule('a'), mkModule('b', { projectId: 'P2' })];
-    expect(selectModulesForProject('P1').projector(all).map((m) => m.id)).toEqual(['a']);
+    expect(
+      selectModulesForProject('P1')
+        .projector(all)
+        .map((m) => m.id),
+    ).toEqual(['a']);
   });
 });

@@ -1,5 +1,11 @@
 import { createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
+import {
+  createFeatureSelector,
+  createReducer,
+  createSelector,
+  MemoizedSelector,
+  on,
+} from '@ngrx/store';
 import { Module, ModuleState } from '../module.model';
 import { loadAllData } from '../../../root-store/meta/load-all-data.action';
 import { AppDataComplete } from '../../../op-log/model/model-config';
@@ -23,7 +29,9 @@ export const selectModuleEntities = createSelector(
 );
 export const selectAllModuleIds = createSelector(selectModuleFeatureState, selectIds);
 
-export const selectModulesForProject = (projectId: string) =>
+export const selectModulesForProject = (
+  projectId: string,
+): MemoizedSelector<object, Module[]> =>
   createSelector(selectAllModules, (modules) =>
     modules.filter((module) => module.projectId === projectId),
   );

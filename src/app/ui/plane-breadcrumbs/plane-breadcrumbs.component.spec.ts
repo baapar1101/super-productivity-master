@@ -26,8 +26,9 @@ describe('PlaneBreadcrumbsComponent', () => {
     ]);
     fixture.detectChanges();
 
-    const links: NodeListOf<HTMLAnchorElement> =
-      fixture.nativeElement.querySelectorAll('.plane-breadcrumb-link');
+    const links: NodeListOf<HTMLAnchorElement> = fixture.nativeElement.querySelectorAll(
+      '.plane-breadcrumb-link',
+    );
     const current: HTMLElement = fixture.nativeElement.querySelector('.is-current');
 
     expect(links.length).toBe(2);

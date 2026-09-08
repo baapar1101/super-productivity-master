@@ -28,5 +28,7 @@ export class PlaneStateDotComponent {
   readonly color = input<string | null>(null);
   readonly group = input<WorkflowStateGroup>('backlog');
 
-  readonly resolvedColor = computed(() => this.color() || GROUP_FALLBACK_VAR[this.group()]);
+  readonly resolvedColor = computed(
+    () => this.color() || GROUP_FALLBACK_VAR[this.group()],
+  );
 }

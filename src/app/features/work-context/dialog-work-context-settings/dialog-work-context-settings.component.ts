@@ -162,6 +162,7 @@ export class DialogWorkContextSettingsComponent {
         icon: p.icon,
         isEnableBacklog: p.isEnableBacklog,
         isHiddenFromMenu: p.isHiddenFromMenu,
+        planeFeatureFlags: p.planeFeatureFlags,
         theme,
       });
     } else {

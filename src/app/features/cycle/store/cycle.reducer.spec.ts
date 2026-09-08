@@ -37,6 +37,10 @@ describe('cycleReducer', () => {
 describe('selectCyclesForProject', () => {
   it('filters by project', () => {
     const all = [mkCycle('a'), mkCycle('b', { projectId: 'P2' })];
-    expect(selectCyclesForProject('P1').projector(all).map((c) => c.id)).toEqual(['a']);
+    expect(
+      selectCyclesForProject('P1')
+        .projector(all)
+        .map((c) => c.id),
+    ).toEqual(['a']);
   });
 });

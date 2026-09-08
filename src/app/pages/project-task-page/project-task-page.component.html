@@ -21,10 +21,28 @@
     </button>
   </div>
 }
-<work-view
-  [unclaimedTasks]="unclaimedTasks()"
-  [backlogTasks]="backlogTasks()"
-  [doneTasks]="doneTasks()"
-  [isShowBacklog]="isShowBacklog()"
-  [undoneTasks]="undoneTasks()"
-></work-view>
+@if (isPlaneListLayout()) {
+  <work-item-list></work-item-list>
+  <button
+    class="classic-view-switch"
+    type="button"
+    (click)="setPlaneListLayout(false)"
+  >
+    Switch to classic view
+  </button>
+} @else {
+  <work-view
+    [unclaimedTasks]="unclaimedTasks()"
+    [backlogTasks]="backlogTasks()"
+    [doneTasks]="doneTasks()"
+    [isShowBacklog]="isShowBacklog()"
+    [undoneTasks]="undoneTasks()"
+  ></work-view>
+  <button
+    class="classic-view-switch"
+    type="button"
+    (click)="setPlaneListLayout(true)"
+  >
+    Switch to work item list
+  </button>
+}

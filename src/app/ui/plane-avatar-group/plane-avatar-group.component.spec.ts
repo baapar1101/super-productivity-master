@@ -1,5 +1,8 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { PlaneAvatarGroupComponent, PlaneAvatarPerson } from './plane-avatar-group.component';
+import {
+  PlaneAvatarGroupComponent,
+  PlaneAvatarPerson,
+} from './plane-avatar-group.component';
 
 describe('PlaneAvatarGroupComponent', () => {
   let fixture: ComponentFixture<PlaneAvatarGroupComponent>;

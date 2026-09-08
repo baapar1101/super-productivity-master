@@ -1,0 +1,102 @@
+@use '../../../../styles/_globals.scss' as *;
+
+:host {
+  display: block;
+}
+
+.work-item-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s);
+  padding: 7px var(--s2);
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  min-width: 0;
+  transition: background-color var(--transition-fast, 150ms ease);
+
+  &:hover {
+    background: var(--state-hover);
+  }
+
+  &.is-selected {
+    background: var(--state-selected);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: -2px;
+  }
+
+  &.is-done .row-title {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+  }
+}
+
+.done-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+
+  &:hover {
+    color: var(--c-primary);
+  }
+
+  mat-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+    line-height: 18px;
+  }
+}
+
+.row-priority,
+.row-state-dot {
+  flex-shrink: 0;
+}
+
+.row-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.row-props {
+  display: flex;
+  align-items: center;
+  gap: var(--s);
+  flex-shrink: 0;
+}
+
+.row-subtasks {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  color: var(--text-tertiary);
+
+  mat-icon {
+    width: 14px;
+    height: 14px;
+    font-size: 14px;
+    line-height: 14px;
+  }
+}
+
+.label-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-inline-end: 4px;
+}

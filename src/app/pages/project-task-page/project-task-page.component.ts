@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { MatButton } from '@angular/material/button';
 import { TranslatePipe } from '@ngx-translate/core';
 import { WorkContextService } from '../../features/work-context/work-context.service';
@@ -10,13 +10,16 @@ import { ProjectService } from '../../features/project/project.service';
 import { PlainspaceClaimPoolService } from '../../features/plainspace/plainspace-claim-pool.service';
 import { PlainspaceSharedTask } from '../../features/plainspace/plainspace-shared-task.model';
 import { T } from '../../t.const';
+import { WorkItemListComponent } from '../../features/work-item-list/work-item-list.component';
+
+const LS_PLANE_LIST_LAYOUT = 'SP_PLANE_LIST_LAYOUT';
 
 @Component({
   selector: 'work-view-page',
   templateUrl: './project-task-page.component.html',
   styleUrls: ['./project-task-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButton, TranslatePipe, WorkViewComponent],
+  imports: [MatButton, TranslatePipe, WorkViewComponent, WorkItemListComponent],
 })
 export class ProjectTaskPageComponent {
   workContextService = inject(WorkContextService);
@@ -57,6 +60,18 @@ export class ProjectTaskPageComponent {
   readonly currentProject = toSignal(this._projectService.currentProject$, {
     initialValue: null,
   });
+
+  // Plane's List layout vs SP's classic work view. Persisted per device so the
+  // choice survives a reload; the classic view stays one click away while the
+  // remaining Plane layouts (Board/Calendar/…) are still being built.
+  readonly isPlaneListLayout = signal<boolean>(
+    localStorage.getItem(LS_PLANE_LIST_LAYOUT) !== 'false',
+  );
+
+  setPlaneListLayout(isOn: boolean): void {
+    this.isPlaneListLayout.set(isOn);
+    localStorage.setItem(LS_PLANE_LIST_LAYOUT, String(isOn));
+  }
 
   restoreProject(): void {
     const project = this.currentProject();

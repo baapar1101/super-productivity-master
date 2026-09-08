@@ -28,6 +28,10 @@ export class ProjectShellComponent {
     initialValue: null,
   });
 
+  // Links are absolute: the shell sits on a pathless (`path: ''`) route, so a
+  // relative `['../', …]` climbs past the `:id` segment and drops it.
+  readonly projectId = computed(() => this._project()?.id ?? null);
+
   readonly tabs = computed<ProjectTab[]>(() => {
     const flags: PlaneFeatureFlags = this._project()?.planeFeatureFlags ?? {};
 

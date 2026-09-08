@@ -1,5 +1,11 @@
 import { createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
+import {
+  createFeatureSelector,
+  createReducer,
+  createSelector,
+  MemoizedSelector,
+  on,
+} from '@ngrx/store';
 import { WorkflowState, WorkflowStateState } from '../workflow-state.model';
 import { loadAllData } from '../../../root-store/meta/load-all-data.action';
 import { AppDataComplete } from '../../../op-log/model/model-config';
@@ -17,8 +23,9 @@ export const workflowStateAdapter: EntityAdapter<WorkflowState> =
 export const initialWorkflowStateState: WorkflowStateState =
   workflowStateAdapter.getInitialState();
 
-export const selectWorkflowStateFeatureState =
-  createFeatureSelector<WorkflowStateState>(WORKFLOW_STATE_FEATURE_NAME);
+export const selectWorkflowStateFeatureState = createFeatureSelector<WorkflowStateState>(
+  WORKFLOW_STATE_FEATURE_NAME,
+);
 
 const { selectAll, selectEntities, selectIds } = workflowStateAdapter.getSelectors();
 
@@ -36,7 +43,9 @@ export const selectAllWorkflowStateIds = createSelector(
 );
 
 /** States for one project, in their configured order. */
-export const selectWorkflowStatesForProject = (projectId: string) =>
+export const selectWorkflowStatesForProject = (
+  projectId: string,
+): MemoizedSelector<object, WorkflowState[]> =>
   createSelector(selectAllWorkflowStates, (states) =>
     states
       .filter((state) => state.projectId === projectId)
@@ -59,7 +68,5 @@ export const workflowStateReducer = createReducer<WorkflowStateState>(
   on(updateWorkflowState, (state, { workflowState }) =>
     workflowStateAdapter.updateOne(workflowState, state),
   ),
-  on(deleteWorkflowState, (state, { id }) =>
-    workflowStateAdapter.removeOne(id, state),
-  ),
+  on(deleteWorkflowState, (state, { id }) => workflowStateAdapter.removeOne(id, state)),
 );

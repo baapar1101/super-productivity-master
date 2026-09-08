@@ -1,5 +1,11 @@
 import { createEntityAdapter, EntityAdapter } from '@ngrx/entity';
-import { createFeatureSelector, createReducer, createSelector, on } from '@ngrx/store';
+import {
+  createFeatureSelector,
+  createReducer,
+  createSelector,
+  MemoizedSelector,
+  on,
+} from '@ngrx/store';
 import { Estimate, EstimateState } from '../estimate.model';
 import { loadAllData } from '../../../root-store/meta/load-all-data.action';
 import { AppDataComplete } from '../../../op-log/model/model-config';
@@ -23,7 +29,9 @@ export const selectEstimateEntities = createSelector(
 );
 export const selectAllEstimateIds = createSelector(selectEstimateFeatureState, selectIds);
 
-export const selectEstimateForProject = (projectId: string) =>
+export const selectEstimateForProject = (
+  projectId: string,
+): MemoizedSelector<object, Estimate | undefined> =>
   createSelector(selectAllEstimates, (estimates) =>
     estimates.find((estimate) => estimate.projectId === projectId),
   );
