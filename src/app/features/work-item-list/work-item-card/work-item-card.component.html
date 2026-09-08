@@ -1,0 +1,61 @@
+@let vm = item();
+@let task = vm.task;
+@let due = formatDue(task.dueDay, task.dueWithTime);
+
+<div
+  class="work-item-card"
+  [class.is-selected]="isSelected()"
+  [class.is-done]="task.isDone"
+  (click)="onSelect()"
+  (keydown.enter)="onSelect()"
+  tabindex="0"
+  role="button"
+>
+  <span class="card-title">{{ task.title }}</span>
+
+  <div class="card-meta">
+    <plane-priority-icon
+      [priority]="vm.priority"
+      [matTooltip]="'Priority: ' + vm.priority"
+    ></plane-priority-icon>
+
+    @if (isShowStateDot()) {
+      <plane-state-dot
+        [color]="vm.state.color"
+        [group]="vm.state.group"
+        [matTooltip]="vm.state.name"
+      ></plane-state-dot>
+    }
+
+    @if (vm.subTaskCount > 0) {
+      <span
+        class="card-subtasks"
+        [matTooltip]="vm.subTaskCount + ' sub-items'"
+      >
+        <mat-icon>account_tree</mat-icon>{{ vm.subTaskCount }}
+      </span>
+    }
+
+    @for (label of vm.labels; track label.id) {
+      <plane-pill
+        size="xs"
+        radius="circle"
+      >
+        <span
+          class="label-dot"
+          [style.background-color]="label.color"
+        ></span>
+        {{ label.name }}
+      </plane-pill>
+    }
+
+    @if (due) {
+      <plane-pill
+        size="xs"
+        radius="circle"
+        [matTooltip]="'Due ' + due"
+        >{{ due }}</plane-pill
+      >
+    }
+  </div>
+</div>

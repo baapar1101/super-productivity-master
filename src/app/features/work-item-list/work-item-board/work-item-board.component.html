@@ -1,0 +1,39 @@
+<div
+  class="board"
+  cdkDropListGroup
+>
+  @for (group of groups(); track group.key) {
+    <section class="board-column">
+      <header class="board-column-header">
+        @if (group.priority) {
+          <plane-priority-icon [priority]="group.priority"></plane-priority-icon>
+        } @else if (group.color) {
+          <plane-state-dot [color]="group.color"></plane-state-dot>
+        }
+        <span class="board-column-title">{{ group.title }}</span>
+        <span class="board-column-count">{{ group.items.length }}</span>
+      </header>
+
+      <div
+        class="board-column-body"
+        cdkDropList
+        [cdkDropListData]="group"
+        [cdkDropListDisabled]="!isDragEnabled()"
+        (cdkDropListDropped)="onDrop($event, group)"
+      >
+        @for (item of group.items; track item.task.id) {
+          <work-item-card
+            cdkDrag
+            [cdkDragData]="item"
+            [item]="item"
+            [isSelected]="selectedTaskId() === item.task.id"
+            [isShowStateDot]="!isGroupedByState()"
+            (selected)="onSelect($event)"
+          ></work-item-card>
+        } @empty {
+          <p class="board-column-empty">No work items</p>
+        }
+      </div>
+    </section>
+  }
+</div>

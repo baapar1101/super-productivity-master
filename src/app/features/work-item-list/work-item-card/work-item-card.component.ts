@@ -1,14 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, input, output } from '@angular/core';
-import { DateTimeFormatService } from '../../../core/date-time-format/date-time-format.service';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { DateTimeFormatService } from '../../../core/date-time-format/date-time-format.service';
 import { PlaneStateDotComponent } from '../../../ui/plane-state-dot/plane-state-dot.component';
 import { PlanePriorityIconComponent } from '../../../ui/plane-priority-icon/plane-priority-icon.component';
 import { PlanePillComponent } from '../../../ui/plane-pill/plane-pill.component';
 import { WorkItemVm } from '../work-item-list.model';
 
 @Component({
-  selector: 'work-item-row',
+  selector: 'work-item-card',
   standalone: true,
   imports: [
     MatIconModule,
@@ -17,35 +17,29 @@ import { WorkItemVm } from '../work-item-list.model';
     PlanePriorityIconComponent,
     PlanePillComponent,
   ],
-  templateUrl: './work-item-row.component.html',
-  styleUrls: ['./work-item-row.component.scss'],
+  templateUrl: './work-item-card.component.html',
+  styleUrls: ['./work-item-card.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WorkItemRowComponent {
+export class WorkItemCardComponent {
   private readonly _dateTimeFormatService = inject(DateTimeFormatService);
 
   readonly item = input.required<WorkItemVm>();
   readonly isSelected = input<boolean>(false);
+  /** Hidden inside a state column, where every card shares the same state. */
+  readonly isShowStateDot = input<boolean>(true);
 
   readonly selected = output<string>();
-  readonly doneToggled = output<string>();
 
   onSelect(): void {
     this.selected.emit(this.item().task.id);
   }
 
-  onToggleDone(ev: Event): void {
-    ev.stopPropagation();
-    this.doneToggled.emit(this.item().task.id);
-  }
-
-  /** Plane shows a short due-date chip; keep it terse (e.g. "Mar 4"). */
   formatDue(dueDay?: string | null, dueWithTime?: number | null): string | null {
     const d = dueWithTime ? new Date(dueWithTime) : dueDay ? new Date(dueDay) : null;
     if (!d || isNaN(d.getTime())) {
       return null;
     }
-    // Spelled-out month must follow the app's UI language, not the browser's.
     return d.toLocaleDateString(this._dateTimeFormatService.textLocale(), {
       month: 'short',
       day: 'numeric',
