@@ -156,6 +156,13 @@ export interface TaskCopy
   cycleId?: string | null;
   moduleIds?: string[];
   estimatePointId?: string | null;
+  /**
+   * Start of the work item's span (YYYY-MM-DD), pairing with `dueDay` as the
+   * end. SP has no native start date — a task is a point in time — but Plane's
+   * timeline needs a range, so this is the Plane-side counterpart to
+   * `start_date`. Absent means "single-day item ending on dueDay".
+   */
+  startDay?: string | null;
 }
 
 /**

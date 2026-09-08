@@ -1,0 +1,152 @@
+@use '../../../../styles/_globals.scss' as *;
+
+:host {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+// Wide grids scroll inside their own container so the page never scrolls sideways.
+.sheet-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
+.sheet {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.sheet-th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: 0;
+  text-align: start;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--layer-1);
+  border-bottom: 1px solid var(--border-subtle);
+  border-inline-end: 1px solid var(--border-subtle);
+
+  &.is-numeric {
+    text-align: end;
+  }
+}
+
+// The title column stays put while the property columns scroll under it.
+.sheet-th-title,
+.sheet-td-title {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 2;
+  min-width: 240px;
+  background: var(--surface-1);
+}
+
+.sheet-th-title {
+  z-index: 3;
+  background: var(--layer-1);
+}
+
+.sheet-sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 6px var(--s);
+  border: none;
+  background: none;
+  color: var(--text-tertiary);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: inherit;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--state-hover);
+  }
+}
+
+.sheet-sort-icon {
+  width: 13px;
+  height: 13px;
+  font-size: 13px;
+  line-height: 13px;
+  color: var(--c-primary);
+}
+
+.sheet-row {
+  cursor: pointer;
+
+  &:hover .sheet-td {
+    background: var(--state-hover);
+  }
+
+  &.is-selected .sheet-td {
+    background: var(--state-selected);
+  }
+
+  &.is-done .sheet-title {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: -2px;
+  }
+}
+
+.sheet-td {
+  padding: 6px var(--s);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border-subtle);
+  border-inline-end: 1px solid var(--border-subtle);
+  text-transform: capitalize;
+
+  &.is-numeric {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.sheet-td-title {
+  text-transform: none;
+}
+
+.sheet-title {
+  display: block;
+  max-width: 42ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+
+.sheet-cell-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sheet-empty {
+  color: var(--text-tertiary);
+}
+
+.sheet-empty-row {
+  padding: var(--s2);
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+.label-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-inline-end: 4px;
+}

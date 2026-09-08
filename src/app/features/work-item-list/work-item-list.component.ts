@@ -34,6 +34,7 @@ import {
   WorkItemCalendarComponent,
   WorkItemCalendarDrop,
 } from './work-item-calendar/work-item-calendar.component';
+import { WorkItemSpreadsheetComponent } from './work-item-spreadsheet/work-item-spreadsheet.component';
 import { PlannerActions } from '../planner/store/planner.actions';
 import { IssuePriority } from '../../ui/plane-priority-icon/plane-priority-icon.component';
 
@@ -49,7 +50,7 @@ const LAYOUTS: readonly LayoutOption[] = [
   { id: 'list', icon: 'view_list', label: 'List', isEnabled: true },
   { id: 'kanban', icon: 'view_kanban', label: 'Board', isEnabled: true },
   { id: 'calendar', icon: 'calendar_month', label: 'Calendar', isEnabled: true },
-  { id: 'spreadsheet', icon: 'table_chart', label: 'Spreadsheet', isEnabled: false },
+  { id: 'spreadsheet', icon: 'table_chart', label: 'Spreadsheet', isEnabled: true },
   { id: 'gantt', icon: 'timeline', label: 'Timeline', isEnabled: false },
 ];
 
@@ -75,6 +76,7 @@ const GROUP_BY_OPTIONS: readonly { id: WorkItemGroupBy; label: string }[] = [
     WorkItemRowComponent,
     WorkItemBoardComponent,
     WorkItemCalendarComponent,
+    WorkItemSpreadsheetComponent,
   ],
   templateUrl: './work-item-list.component.html',
   styleUrls: ['./work-item-list.component.scss'],

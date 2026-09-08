@@ -47,7 +47,13 @@
   }
 </mat-menu>
 
-@if (activeLayout() === 'calendar') {
+@if (activeLayout() === 'spreadsheet') {
+  <work-item-spreadsheet
+    [items]="flatItems()"
+    [selectedTaskId]="selectedTaskId()"
+    (itemSelected)="onSelectTask($event)"
+  ></work-item-spreadsheet>
+} @else if (activeLayout() === 'calendar') {
   <work-item-calendar
     [items]="flatItems()"
     [selectedTaskId]="selectedTaskId()"

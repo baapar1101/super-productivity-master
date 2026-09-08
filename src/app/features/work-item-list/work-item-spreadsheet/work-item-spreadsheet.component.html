@@ -1,0 +1,122 @@
+<div class="sheet-scroll">
+  <table class="sheet">
+    <thead>
+      <tr>
+        <th
+          class="sheet-th sheet-th-title"
+          scope="col"
+        >
+          <button
+            class="sheet-sort-btn"
+            type="button"
+            (click)="toggleSort('title')"
+          >
+            <span>Work item</span>
+            @if (sortIcon('title'); as icon) {
+              <mat-icon class="sheet-sort-icon">{{ icon }}</mat-icon>
+            }
+          </button>
+        </th>
+
+        @for (col of columns; track col.id) {
+          <th
+            class="sheet-th"
+            [class.is-numeric]="col.isNumeric"
+            scope="col"
+          >
+            <button
+              class="sheet-sort-btn"
+              type="button"
+              (click)="toggleSort(col.id)"
+            >
+              <span>{{ col.label }}</span>
+              @if (sortIcon(col.id); as icon) {
+                <mat-icon class="sheet-sort-icon">{{ icon }}</mat-icon>
+              }
+            </button>
+          </th>
+        }
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (item of rows(); track item.task.id) {
+        <tr
+          class="sheet-row"
+          [class.is-selected]="selectedTaskId() === item.task.id"
+          [class.is-done]="item.task.isDone"
+          (click)="onSelect(item.task.id)"
+          (keydown.enter)="onSelect(item.task.id)"
+          tabindex="0"
+        >
+          <td class="sheet-td sheet-td-title">
+            <span class="sheet-title">{{ item.task.title }}</span>
+          </td>
+
+          <td class="sheet-td">
+            <span class="sheet-cell-inline">
+              <plane-state-dot
+                [color]="item.state.color"
+                [group]="item.state.group"
+              ></plane-state-dot>
+              {{ item.state.name }}
+            </span>
+          </td>
+
+          <td class="sheet-td">
+            <span class="sheet-cell-inline">
+              <plane-priority-icon [priority]="item.priority"></plane-priority-icon>
+              {{ item.priority }}
+            </span>
+          </td>
+
+          <td class="sheet-td">
+            @if (item.labels.length) {
+              <span class="sheet-cell-inline">
+                @for (label of item.labels; track label.id) {
+                  <plane-pill
+                    size="xs"
+                    radius="circle"
+                  >
+                    <span
+                      class="label-dot"
+                      [style.background-color]="label.color"
+                    ></span>
+                    {{ label.name }}
+                  </plane-pill>
+                }
+              </span>
+            } @else {
+              <span class="sheet-empty">—</span>
+            }
+          </td>
+
+          <td class="sheet-td">
+            {{ dueDate(item) ?? '—' }}
+          </td>
+
+          <td class="sheet-td is-numeric">
+            {{ estimateHours(item) ?? '—' }}
+          </td>
+
+          <td class="sheet-td is-numeric">
+            {{ item.subTaskCount || '—' }}
+          </td>
+
+          <td class="sheet-td">
+            {{ createdDate(item) ?? '—' }}
+          </td>
+        </tr>
+      } @empty {
+        <tr>
+          <td
+            class="sheet-td sheet-empty-row"
+            [attr.colspan]="columns.length + 1"
+          >
+            No work items
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
