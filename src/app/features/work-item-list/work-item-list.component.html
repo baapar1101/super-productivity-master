@@ -47,40 +47,58 @@
   }
 </mat-menu>
 
-<div class="wil-body">
-  @for (group of groups(); track group.key) {
-    <section class="wil-group">
-      <button
-        class="wil-group-header"
-        type="button"
-        (click)="toggleGroup(group.key)"
-      >
-        <mat-icon class="wil-group-caret">
-          {{ isCollapsed(group.key) ? 'chevron_right' : 'expand_more' }}
-        </mat-icon>
+@if (activeLayout() === 'calendar') {
+  <work-item-calendar
+    [items]="flatItems()"
+    [selectedTaskId]="selectedTaskId()"
+    (itemSelected)="onSelectTask($event)"
+    (itemDropped)="onCalendarDropped($event)"
+  ></work-item-calendar>
+} @else if (activeLayout() === 'kanban') {
+  <work-item-board
+    [groups]="groups()"
+    [selectedTaskId]="selectedTaskId()"
+    [isGroupedByState]="groupBy() === 'state'"
+    [isDragEnabled]="groupBy() === 'state' || groupBy() === 'priority'"
+    (itemSelected)="onSelectTask($event)"
+    (itemDropped)="onItemDropped($event)"
+  ></work-item-board>
+} @else {
+  <div class="wil-body">
+    @for (group of groups(); track group.key) {
+      <section class="wil-group">
+        <button
+          class="wil-group-header"
+          type="button"
+          (click)="toggleGroup(group.key)"
+        >
+          <mat-icon class="wil-group-caret">
+            {{ isCollapsed(group.key) ? 'chevron_right' : 'expand_more' }}
+          </mat-icon>
 
-        @if (group.priority) {
-          <plane-priority-icon [priority]="group.priority"></plane-priority-icon>
-        } @else if (group.color) {
-          <plane-state-dot [color]="group.color"></plane-state-dot>
+          @if (group.priority) {
+            <plane-priority-icon [priority]="group.priority"></plane-priority-icon>
+          } @else if (group.color) {
+            <plane-state-dot [color]="group.color"></plane-state-dot>
+          }
+
+          <span class="wil-group-title">{{ group.title }}</span>
+          <span class="wil-group-count">{{ group.items.length }}</span>
+        </button>
+
+        @if (!isCollapsed(group.key)) {
+          @for (item of group.items; track item.task.id) {
+            <work-item-row
+              [item]="item"
+              [isSelected]="selectedTaskId() === item.task.id"
+              (selected)="onSelectTask($event)"
+              (doneToggled)="onToggleDone($event)"
+            ></work-item-row>
+          } @empty {
+            <p class="wil-group-empty">No work items</p>
+          }
         }
-
-        <span class="wil-group-title">{{ group.title }}</span>
-        <span class="wil-group-count">{{ group.items.length }}</span>
-      </button>
-
-      @if (!isCollapsed(group.key)) {
-        @for (item of group.items; track item.task.id) {
-          <work-item-row
-            [item]="item"
-            [isSelected]="selectedTaskId() === item.task.id"
-            (selected)="onSelectTask($event)"
-            (doneToggled)="onToggleDone($event)"
-          ></work-item-row>
-        } @empty {
-          <p class="wil-group-empty">No work items</p>
-        }
-      }
-    </section>
-  }
-</div>
+      </section>
+    }
+  </div>
+}

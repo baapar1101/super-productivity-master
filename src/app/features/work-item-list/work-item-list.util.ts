@@ -49,6 +49,40 @@ export const resolveTaskState = (
 
 export const resolveTaskPriority = (task: Task): IssuePriority => task.priority ?? 'none';
 
+/**
+ * The task changes a board drop implies.
+ *
+ * Moving between state columns writes `workflowStateId`, and additionally
+ * syncs SP's own `isDone` whenever the move crosses the completed boundary —
+ * otherwise a card parked in "Done" would still count as open everywhere else
+ * in the app (today list, classic view, time tracking).
+ *
+ * Returns `null` when the drop is a no-op.
+ */
+export const buildStateDropChanges = (
+  task: Task,
+  targetState: WorkflowState,
+  states: readonly WorkflowState[],
+): { changes: Partial<Task>; isDoneChange: boolean | null } | null => {
+  const current = resolveTaskState(task, states);
+  if (current.id === targetState.id) {
+    return null;
+  }
+
+  const shouldBeDone = targetState.group === 'completed';
+  return {
+    changes: { workflowStateId: targetState.id },
+    isDoneChange: shouldBeDone === !!task.isDone ? null : shouldBeDone,
+  };
+};
+
+/** Priority-column drop: only writes `priority`, nothing else. */
+export const buildPriorityDropChanges = (
+  task: Task,
+  targetPriority: IssuePriority,
+): Partial<Task> | null =>
+  resolveTaskPriority(task) === targetPriority ? null : { priority: targetPriority };
+
 export const buildWorkItemVm = (
   task: Task,
   states: readonly WorkflowState[],

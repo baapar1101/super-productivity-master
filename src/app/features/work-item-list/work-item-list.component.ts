@@ -20,10 +20,22 @@ import { PlanePriorityIconComponent } from '../../ui/plane-priority-icon/plane-p
 import { WorkItemRowComponent } from './work-item-row/work-item-row.component';
 import { WorkItemGroupBy, WorkItemGroupVm, WorkItemLayout } from './work-item-list.model';
 import {
+  buildPriorityDropChanges,
+  buildStateDropChanges,
   buildWorkItemVm,
   groupWorkItems,
   resolveProjectStates,
 } from './work-item-list.util';
+import {
+  WorkItemBoardComponent,
+  WorkItemBoardDrop,
+} from './work-item-board/work-item-board.component';
+import {
+  WorkItemCalendarComponent,
+  WorkItemCalendarDrop,
+} from './work-item-calendar/work-item-calendar.component';
+import { PlannerActions } from '../planner/store/planner.actions';
+import { IssuePriority } from '../../ui/plane-priority-icon/plane-priority-icon.component';
 
 interface LayoutOption {
   id: WorkItemLayout;
@@ -35,11 +47,14 @@ interface LayoutOption {
 
 const LAYOUTS: readonly LayoutOption[] = [
   { id: 'list', icon: 'view_list', label: 'List', isEnabled: true },
-  { id: 'kanban', icon: 'view_kanban', label: 'Board', isEnabled: false },
-  { id: 'calendar', icon: 'calendar_month', label: 'Calendar', isEnabled: false },
+  { id: 'kanban', icon: 'view_kanban', label: 'Board', isEnabled: true },
+  { id: 'calendar', icon: 'calendar_month', label: 'Calendar', isEnabled: true },
   { id: 'spreadsheet', icon: 'table_chart', label: 'Spreadsheet', isEnabled: false },
   { id: 'gantt', icon: 'timeline', label: 'Timeline', isEnabled: false },
 ];
+
+const LS_LAYOUT = 'SP_WORK_ITEM_LAYOUT';
+const LS_GROUP_BY = 'SP_WORK_ITEM_GROUP_BY';
 
 const GROUP_BY_OPTIONS: readonly { id: WorkItemGroupBy; label: string }[] = [
   { id: 'state', label: 'State' },
@@ -58,6 +73,8 @@ const GROUP_BY_OPTIONS: readonly { id: WorkItemGroupBy; label: string }[] = [
     PlaneStateDotComponent,
     PlanePriorityIconComponent,
     WorkItemRowComponent,
+    WorkItemBoardComponent,
+    WorkItemCalendarComponent,
   ],
   templateUrl: './work-item-list.component.html',
   styleUrls: ['./work-item-list.component.scss'],
@@ -71,8 +88,14 @@ export class WorkItemListComponent {
   readonly layouts = LAYOUTS;
   readonly groupByOptions = GROUP_BY_OPTIONS;
 
-  readonly activeLayout = signal<WorkItemLayout>('list');
-  readonly groupBy = signal<WorkItemGroupBy>('state');
+  // Layout + grouping are view preferences, not synced data — Plane persists
+  // them per view; per device is close enough until saved Views exist.
+  readonly activeLayout = signal<WorkItemLayout>(
+    (localStorage.getItem(LS_LAYOUT) as WorkItemLayout | null) ?? 'list',
+  );
+  readonly groupBy = signal<WorkItemGroupBy>(
+    (localStorage.getItem(LS_GROUP_BY) as WorkItemGroupBy | null) ?? 'state',
+  );
   readonly collapsedGroups = signal<ReadonlySet<string>>(new Set());
 
   private readonly _tasks = toSignal(
@@ -113,14 +136,24 @@ export class WorkItemListComponent {
 
   readonly totalCount = computed(() => this._tasks().length);
 
+  /** The calendar buckets by date itself, so it takes a flat, ungrouped list. */
+  readonly flatItems = computed(() => {
+    const states = this._projectStates();
+    const labels = this._projectLabels();
+    const labelsById = Object.fromEntries(labels.map((l) => [l.id, l]));
+    return this._tasks().map((task) => buildWorkItemVm(task, states, labelsById));
+  });
+
   setLayout(layout: LayoutOption): void {
     if (layout.isEnabled) {
       this.activeLayout.set(layout.id);
+      localStorage.setItem(LS_LAYOUT, layout.id);
     }
   }
 
   setGroupBy(groupBy: WorkItemGroupBy): void {
     this.groupBy.set(groupBy);
+    localStorage.setItem(LS_GROUP_BY, groupBy);
   }
 
   isCollapsed(key: string): boolean {
@@ -150,6 +183,58 @@ export class WorkItemListComponent {
       this._taskService.setUnDone(taskId);
     } else {
       this._taskService.setDone(taskId);
+    }
+  }
+
+  /** Dropping onto a calendar day reschedules the work item to that day. */
+  onCalendarDropped({ taskId, toDayStr }: WorkItemCalendarDrop): void {
+    const task = this._tasks().find((t) => t.id === taskId);
+    if (!task) {
+      return;
+    }
+    // Go through the planner action rather than writing `dueDay` directly: it
+    // owns today-tag membership, ordering and the confirmation snack.
+    this._store.dispatch(
+      PlannerActions.planTaskForDay({ task, day: toDayStr, isShowSnack: true }),
+    );
+  }
+
+  /**
+   * A board drop is the first place `workflowStateId` / `priority` are actually
+   * written — every other view only reads them.
+   */
+  onItemDropped({ taskId, toGroupKey }: WorkItemBoardDrop): void {
+    const task = this._tasks().find((t) => t.id === taskId);
+    if (!task) {
+      return;
+    }
+
+    if (this.groupBy() === 'priority') {
+      const changes = buildPriorityDropChanges(task, toGroupKey as IssuePriority);
+      if (changes) {
+        this._taskService.update(taskId, changes);
+      }
+      return;
+    }
+
+    const states = this._projectStates();
+    const targetState = states.find((s) => s.id === toGroupKey);
+    if (!targetState) {
+      return;
+    }
+
+    const result = buildStateDropChanges(task, targetState, states);
+    if (!result) {
+      return;
+    }
+
+    this._taskService.update(taskId, result.changes);
+    // setDone/setUnDone carry SP's own side effects (time tracking, today list),
+    // so go through them rather than patching isDone directly.
+    if (result.isDoneChange === true) {
+      this._taskService.setDone(taskId);
+    } else if (result.isDoneChange === false) {
+      this._taskService.setUnDone(taskId);
     }
   }
 }

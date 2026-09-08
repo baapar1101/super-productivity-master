@@ -1,0 +1,105 @@
+<header class="cal-header">
+  <div class="cal-nav">
+    <button
+      class="cal-nav-btn"
+      type="button"
+      aria-label="Previous month"
+      (click)="goToPrevMonth()"
+    >
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="cal-month">{{ monthLabel() }}</span>
+    <button
+      class="cal-nav-btn"
+      type="button"
+      aria-label="Next month"
+      (click)="goToNextMonth()"
+    >
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+    <button
+      class="cal-today-btn"
+      type="button"
+      (click)="goToToday()"
+    >
+      Today
+    </button>
+  </div>
+
+  @if (unscheduledCount() > 0) {
+    <span
+      class="cal-unscheduled"
+      [matTooltip]="'Work items with no due date do not appear on the calendar'"
+    >
+      {{ unscheduledCount() }} unscheduled
+    </span>
+  }
+</header>
+
+<div class="cal-weekdays">
+  @for (label of weekdayLabels(); track label) {
+    <span class="cal-weekday">{{ label }}</span>
+  }
+</div>
+
+<div
+  class="cal-grid"
+  cdkDropListGroup
+>
+  @for (week of weeks(); track week.key) {
+    <div class="cal-week">
+      @for (day of week.days; track day.dayStr) {
+        <div
+          class="cal-day"
+          [class.is-today]="day.isToday"
+          [class.is-other-month]="day.isOtherMonth"
+          cdkDropList
+          [cdkDropListData]="day"
+          (cdkDropListDropped)="onDrop($event, day)"
+        >
+          <span class="cal-day-num">{{ day.dayOfMonth }}</span>
+
+          @for (item of visibleItems(day); track item.task.id) {
+            <div
+              class="cal-chip"
+              [class.is-selected]="selectedTaskId() === item.task.id"
+              [class.is-done]="item.task.isDone"
+              cdkDrag
+              [cdkDragData]="item"
+              [matTooltip]="item.task.title"
+              (click)="onSelect(item.task.id)"
+              (keydown.enter)="onSelect(item.task.id)"
+              tabindex="0"
+              role="button"
+            >
+              <plane-priority-icon [priority]="item.priority"></plane-priority-icon>
+              <plane-state-dot
+                [color]="item.state.color"
+                [group]="item.state.group"
+              ></plane-state-dot>
+              <span class="cal-chip-title">{{ item.task.title }}</span>
+            </div>
+          }
+
+          @if (hiddenCount(day) > 0) {
+            <button
+              class="cal-more"
+              type="button"
+              (click)="toggleExpanded(day.dayStr, $event)"
+            >
+              +{{ hiddenCount(day) }} more
+            </button>
+          } @else if (isExpanded(day.dayStr) && day.items.length > maxChips) {
+            <button
+              class="cal-more"
+              type="button"
+              (click)="toggleExpanded(day.dayStr, $event)"
+            >
+              Show less
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

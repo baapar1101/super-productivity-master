@@ -1,4 +1,6 @@
 import {
+  buildPriorityDropChanges,
+  buildStateDropChanges,
   buildWorkItemVm,
   groupWorkItems,
   resolveProjectStates,
@@ -111,5 +113,76 @@ describe('groupWorkItems', () => {
     const groups = groupWorkItems(items, 'none', states, labels);
     expect(groups.length).toBe(1);
     expect(groups[0].items.length).toBe(3);
+  });
+});
+
+describe('buildStateDropChanges', () => {
+  const states = DEFAULT_WORKFLOW_STATES;
+  const stateFor = (group: WorkflowState['group']): WorkflowState =>
+    states.find((s) => s.group === group) as WorkflowState;
+
+  it('is a no-op when dropped back into the same state', () => {
+    const task = mkTask('t', { workflowStateId: stateFor('started').id });
+    expect(buildStateDropChanges(task, stateFor('started'), states)).toBeNull();
+  });
+
+  it('writes the target state id on a cross-column move', () => {
+    const task = mkTask('t');
+    const res = buildStateDropChanges(task, stateFor('started'), states);
+    expect(res?.changes.workflowStateId).toBe(stateFor('started').id);
+  });
+
+  it('marks the task done when moved into a completed-group state', () => {
+    const res = buildStateDropChanges(mkTask('t'), stateFor('completed'), states);
+    expect(res?.isDoneChange).toBe(true);
+  });
+
+  it('reopens the task when moved out of a completed-group state', () => {
+    const task = mkTask('t', { isDone: true });
+    const res = buildStateDropChanges(task, stateFor('started'), states);
+    expect(res?.isDoneChange).toBe(false);
+  });
+
+  it('leaves isDone alone when the move does not cross the done boundary', () => {
+    const res = buildStateDropChanges(mkTask('t'), stateFor('backlog'), states);
+    expect(res?.isDoneChange).toBeNull();
+  });
+
+  it('is a no-op for a done task dropped back into Done', () => {
+    // A done task with an unresolvable state id already resolves to the single
+    // completed-group state, so the drop changes nothing.
+    const task = mkTask('t', { isDone: true, workflowStateId: 'deleted-state' });
+    expect(buildStateDropChanges(task, stateFor('completed'), states)).toBeNull();
+  });
+
+  it('does not re-mark isDone when both states share the completed group', () => {
+    const shipped: WorkflowState = {
+      id: 'shipped',
+      projectId: 'P1',
+      name: 'Shipped',
+      color: '#0f0',
+      group: 'completed',
+      sortOrder: 9,
+    };
+    const withExtra = [...states, shipped];
+    const task = mkTask('t', { isDone: true, workflowStateId: stateFor('completed').id });
+    const res = buildStateDropChanges(task, shipped, withExtra);
+    expect(res?.changes.workflowStateId).toBe('shipped');
+    expect(res?.isDoneChange).toBeNull();
+  });
+});
+
+describe('buildPriorityDropChanges', () => {
+  it('is a no-op when the priority is unchanged', () => {
+    expect(
+      buildPriorityDropChanges(mkTask('t', { priority: 'high' }), 'high'),
+    ).toBeNull();
+    expect(buildPriorityDropChanges(mkTask('t'), 'none')).toBeNull();
+  });
+
+  it('writes only the priority field', () => {
+    expect(buildPriorityDropChanges(mkTask('t'), 'urgent')).toEqual({
+      priority: 'urgent',
+    });
   });
 });
