@@ -1067,6 +1067,11 @@ describe('OperationLogCompactionService', () => {
         pluginUserData: 'PLUGIN_USER_DATA',
         pluginMetadata: 'PLUGIN_METADATA',
         section: 'SECTION',
+        workflowState: 'WORKFLOW_STATE',
+        issueLabel: 'ISSUE_LABEL',
+        cycle: 'CYCLE',
+        module: 'MODULE',
+        estimate: 'ESTIMATE',
       };
 
       const missingModels: string[] = [];

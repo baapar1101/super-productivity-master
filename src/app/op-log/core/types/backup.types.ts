@@ -22,6 +22,12 @@ export interface AppStateSnapshot {
   pluginMetadata: unknown;
   reminders: unknown;
   section: unknown;
+  // Optional: snapshots written before these collections existed omit them.
+  workflowState?: unknown;
+  issueLabel?: unknown;
+  cycle?: unknown;
+  module?: unknown;
+  estimate?: unknown;
   archiveYoung: ArchiveModel;
   archiveOld: ArchiveModel;
 }
