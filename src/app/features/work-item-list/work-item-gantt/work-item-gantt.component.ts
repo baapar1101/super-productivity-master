@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
   output,
   signal,
@@ -9,6 +10,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { getDbDateStr } from '../../../util/get-db-date-str';
+import { DateTimeFormatService } from '../../../core/date-time-format/date-time-format.service';
 import { PlaneStateDotComponent } from '../../../ui/plane-state-dot/plane-state-dot.component';
 import { PlanePriorityIconComponent } from '../../../ui/plane-priority-icon/plane-priority-icon.component';
 import { WorkItemVm } from '../work-item-list.model';
@@ -49,6 +51,8 @@ interface ActiveDrag {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WorkItemGanttComponent {
+  private readonly _dateTimeFormatService = inject(DateTimeFormatService);
+
   readonly items = input.required<readonly WorkItemVm[]>();
   readonly selectedTaskId = input<string | null>(null);
 
@@ -73,7 +77,12 @@ export class WorkItemGanttComponent {
 
   readonly days = computed(() => {
     const { startDay, endDay } = this._range();
-    return buildDayColumns(startDay, endDay, this.todayStr);
+    return buildDayColumns(
+      startDay,
+      endDay,
+      this.todayStr,
+      this._dateTimeFormatService.textLocale(),
+    );
   });
 
   readonly bars = computed(() => buildBars(this.datedItems(), this._range().startDay));

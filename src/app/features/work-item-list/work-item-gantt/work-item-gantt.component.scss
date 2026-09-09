@@ -1,0 +1,253 @@
+@use '../../../../styles/_globals.scss' as *;
+
+$row-height: 32px;
+$head-height: 44px;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.gantt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s2);
+  flex-shrink: 0;
+  padding: var(--s) var(--s2);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.gantt-zooms {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-md, 6px);
+  background: var(--layer-2);
+}
+
+.gantt-zoom-btn {
+  padding: 3px 10px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  text-transform: capitalize;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+    background: var(--state-hover);
+  }
+
+  &.is-active {
+    background: var(--surface-2);
+    color: var(--c-primary);
+  }
+}
+
+.gantt-undated {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.gantt-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  // Stops the browser from panning while a bar is being dragged.
+  touch-action: none;
+}
+
+.gantt-sidebar {
+  flex: 0 0 240px;
+  overflow: hidden;
+  border-inline-end: 1px solid var(--border-subtle);
+  background: var(--surface-1);
+}
+
+.gantt-sidebar-head {
+  height: $head-height;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--layer-1);
+}
+
+.gantt-sidebar-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: $row-height;
+  padding: 0 var(--s);
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--state-hover);
+  }
+
+  &.is-selected {
+    background: var(--state-selected);
+  }
+}
+
+.gantt-sidebar-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gantt-empty {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  cursor: default;
+}
+
+.gantt-timeline-scroll {
+  flex: 1;
+  min-width: 0;
+  overflow: auto;
+}
+
+.gantt-timeline {
+  position: relative;
+}
+
+.gantt-months,
+.gantt-days {
+  display: flex;
+  position: sticky;
+  z-index: 2;
+  background: var(--layer-1);
+}
+
+.gantt-months {
+  top: 0;
+  height: 22px;
+}
+
+.gantt-days {
+  top: 22px;
+  height: 22px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.gantt-month-cell {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.gantt-month-label {
+  position: absolute;
+  inset-inline-start: 4px;
+  top: 3px;
+  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.gantt-day-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 10px;
+  color: var(--text-tertiary);
+  border-inline-end: 1px solid var(--border-subtle);
+
+  &.is-weekend {
+    background: var(--layer-2);
+  }
+
+  &.is-today {
+    background: color-mix(in srgb, var(--c-primary) 22%, transparent);
+    color: var(--text-primary);
+    font-weight: 700;
+  }
+}
+
+.gantt-rows {
+  position: relative;
+  display: flex;
+  min-height: 100%;
+}
+
+.gantt-gridline {
+  flex-shrink: 0;
+  border-inline-end: 1px solid var(--border-subtle);
+
+  &.is-weekend {
+    background: var(--layer-1);
+  }
+
+  &.is-today {
+    background: color-mix(in srgb, var(--c-primary) 10%, transparent);
+  }
+}
+
+.gantt-bar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--c-primary) 65%, var(--surface-2));
+  border: 1px solid var(--c-primary);
+  color: var(--text-primary);
+  cursor: grab;
+  overflow: hidden;
+  user-select: none;
+
+  &.is-dragging {
+    cursor: grabbing;
+    opacity: 0.85;
+  }
+
+  &.is-selected {
+    outline: 2px solid var(--focus-ring-color);
+    outline-offset: 1px;
+  }
+
+  &.is-done {
+    background: color-mix(in srgb, var(--color-success) 45%, var(--surface-2));
+    border-color: var(--color-success);
+  }
+}
+
+.gantt-bar-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.gantt-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  cursor: col-resize;
+
+  &:hover {
+    background: rgba(var(--ink-on-channel), 0.25);
+  }
+}
+
+.gantt-handle-start {
+  inset-inline-start: 0;
+}
+
+.gantt-handle-end {
+  inset-inline-end: 0;
+}

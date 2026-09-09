@@ -35,7 +35,9 @@ export const itemSpan = (
   }
   const start = item.task.startDay ?? end;
   // A start after the end would render a negative bar — clamp to a single day.
-  return diffDays(start, end) < 0 ? { startDay: end, endDay: end } : { startDay: start, endDay: end };
+  return diffDays(start, end) < 0
+    ? { startDay: end, endDay: end }
+    : { startDay: start, endDay: end };
 };
 
 /**
@@ -62,6 +64,9 @@ export const buildDayColumns = (
   startDay: string,
   endDay: string,
   todayStr: string,
+  // Passed in (not read from navigator) so month labels follow the app's UI
+  // language rather than the browser's.
+  locale = 'en',
 ): GanttDayVm[] => {
   const total = diffDays(startDay, endDay) + 1;
   const days: GanttDayVm[] = [];
@@ -79,7 +84,7 @@ export const buildDayColumns = (
       isWeekend: dow === 0 || dow === 6,
       monthLabel:
         month !== lastMonth
-          ? date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' })
+          ? date.toLocaleDateString(locale, { month: 'short', year: 'numeric' })
           : undefined,
     });
     lastMonth = month;

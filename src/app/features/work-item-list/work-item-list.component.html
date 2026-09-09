@@ -47,7 +47,14 @@
   }
 </mat-menu>
 
-@if (activeLayout() === 'spreadsheet') {
+@if (activeLayout() === 'gantt') {
+  <work-item-gantt
+    [items]="flatItems()"
+    [selectedTaskId]="selectedTaskId()"
+    (itemSelected)="onSelectTask($event)"
+    (datesChanged)="onGanttDatesChanged($event)"
+  ></work-item-gantt>
+} @else if (activeLayout() === 'spreadsheet') {
   <work-item-spreadsheet
     [items]="flatItems()"
     [selectedTaskId]="selectedTaskId()"

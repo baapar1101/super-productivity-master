@@ -35,6 +35,8 @@ import {
   WorkItemCalendarDrop,
 } from './work-item-calendar/work-item-calendar.component';
 import { WorkItemSpreadsheetComponent } from './work-item-spreadsheet/work-item-spreadsheet.component';
+import { WorkItemGanttComponent } from './work-item-gantt/work-item-gantt.component';
+import { GanttDragChange } from './work-item-gantt/work-item-gantt.model';
 import { PlannerActions } from '../planner/store/planner.actions';
 import { IssuePriority } from '../../ui/plane-priority-icon/plane-priority-icon.component';
 
@@ -51,7 +53,7 @@ const LAYOUTS: readonly LayoutOption[] = [
   { id: 'kanban', icon: 'view_kanban', label: 'Board', isEnabled: true },
   { id: 'calendar', icon: 'calendar_month', label: 'Calendar', isEnabled: true },
   { id: 'spreadsheet', icon: 'table_chart', label: 'Spreadsheet', isEnabled: true },
-  { id: 'gantt', icon: 'timeline', label: 'Timeline', isEnabled: false },
+  { id: 'gantt', icon: 'timeline', label: 'Timeline', isEnabled: true },
 ];
 
 const LS_LAYOUT = 'SP_WORK_ITEM_LAYOUT';
@@ -77,6 +79,7 @@ const GROUP_BY_OPTIONS: readonly { id: WorkItemGroupBy; label: string }[] = [
     WorkItemBoardComponent,
     WorkItemCalendarComponent,
     WorkItemSpreadsheetComponent,
+    WorkItemGanttComponent,
   ],
   templateUrl: './work-item-list.component.html',
   styleUrls: ['./work-item-list.component.scss'],
@@ -186,6 +189,22 @@ export class WorkItemListComponent {
     } else {
       this._taskService.setDone(taskId);
     }
+  }
+
+  /**
+   * A timeline drag/resize sets the item's span. The end date goes through the
+   * planner action (same as the calendar), while `startDay` is a Plane-only
+   * field the planner knows nothing about, so it is patched separately.
+   */
+  onGanttDatesChanged({ taskId, startDay, dueDay }: GanttDragChange): void {
+    const task = this._tasks().find((t) => t.id === taskId);
+    if (!task) {
+      return;
+    }
+    this._taskService.update(taskId, { startDay });
+    this._store.dispatch(
+      PlannerActions.planTaskForDay({ task, day: dueDay, isShowSnack: false }),
+    );
   }
 
   /** Dropping onto a calendar day reschedules the work item to that day. */

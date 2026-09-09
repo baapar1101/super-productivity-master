@@ -1,0 +1,137 @@
+<header class="gantt-header">
+  <div class="gantt-zooms">
+    @for (z of zoomLevels; track z) {
+      <button
+        class="gantt-zoom-btn"
+        type="button"
+        [class.is-active]="zoom() === z"
+        (click)="setZoom(z)"
+      >
+        {{ z }}
+      </button>
+    }
+  </div>
+
+  @if (undatedCount() > 0) {
+    <span
+      class="gantt-undated"
+      [matTooltip]="'Work items with no due date have no bar to place'"
+    >
+      {{ undatedCount() }} undated
+    </span>
+  }
+</header>
+
+<div
+  class="gantt-body"
+  (pointermove)="onDragMove($event)"
+  (pointerup)="onDragEnd()"
+  (pointercancel)="onDragEnd()"
+>
+  <!-- Left: the item outline, one row per bar, aligned with the timeline. -->
+  <div class="gantt-sidebar">
+    <div class="gantt-sidebar-head"></div>
+    @for (bar of bars(); track bar.item.task.id) {
+      <div
+        class="gantt-sidebar-row"
+        [class.is-selected]="selectedTaskId() === bar.item.task.id"
+        (click)="onSelect(bar.item.task.id)"
+        (keydown.enter)="onSelect(bar.item.task.id)"
+        tabindex="0"
+        role="button"
+      >
+        <plane-priority-icon [priority]="bar.item.priority"></plane-priority-icon>
+        <plane-state-dot
+          [color]="bar.item.state.color"
+          [group]="bar.item.state.group"
+        ></plane-state-dot>
+        <span class="gantt-sidebar-title">{{ bar.item.task.title }}</span>
+      </div>
+    } @empty {
+      <div class="gantt-sidebar-row gantt-empty">No dated work items</div>
+    }
+  </div>
+
+  <!-- Right: the scrolling timeline. -->
+  <div class="gantt-timeline-scroll">
+    <div
+      class="gantt-timeline"
+      [style.width.px]="timelineWidth()"
+    >
+      <div class="gantt-months">
+        @for (day of days(); track day.dayStr) {
+          <div
+            class="gantt-month-cell"
+            [style.width.px]="dayWidth()"
+          >
+            @if (day.monthLabel) {
+              <span class="gantt-month-label">{{ day.monthLabel }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="gantt-days">
+        @for (day of days(); track day.dayStr) {
+          <div
+            class="gantt-day-cell"
+            [class.is-today]="day.isToday"
+            [class.is-weekend]="day.isWeekend"
+            [style.width.px]="dayWidth()"
+          >
+            @if (dayWidth() >= 20) {
+              <span class="gantt-day-num">{{ day.dayOfMonth }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="gantt-rows">
+        @for (day of days(); track day.dayStr) {
+          <div
+            class="gantt-gridline"
+            [class.is-today]="day.isToday"
+            [class.is-weekend]="day.isWeekend"
+            [style.width.px]="dayWidth()"
+          ></div>
+        }
+
+        @for (bar of bars(); track bar.item.task.id; let i = $index) {
+          @let delta = previewDelta(bar.item.task.id);
+          @let mode = previewMode(bar.item.task.id);
+          @let offset =
+            bar.startOffset + (mode === 'move' || mode === 'resize-start' ? delta : 0);
+          @let len =
+            mode === 'resize-start'
+              ? bar.lengthDays - delta
+              : mode === 'resize-end'
+                ? bar.lengthDays + delta
+                : bar.lengthDays;
+
+          <div
+            class="gantt-bar"
+            [class.is-selected]="selectedTaskId() === bar.item.task.id"
+            [class.is-done]="bar.item.task.isDone"
+            [class.is-dragging]="mode !== null"
+            [style.top.px]="i * 32 + 6"
+            [style.left.px]="offset * dayWidth()"
+            [style.width.px]="(len < 1 ? 1 : len) * dayWidth()"
+            [matTooltip]="bar.item.task.title"
+            (pointerdown)="onDragStart($event, bar.item, 'move')"
+            (click)="onSelect(bar.item.task.id)"
+          >
+            <span
+              class="gantt-handle gantt-handle-start"
+              (pointerdown)="onDragStart($event, bar.item, 'resize-start')"
+            ></span>
+            <span class="gantt-bar-label">{{ bar.item.task.title }}</span>
+            <span
+              class="gantt-handle gantt-handle-end"
+              (pointerdown)="onDragStart($event, bar.item, 'resize-end')"
+            ></span>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
